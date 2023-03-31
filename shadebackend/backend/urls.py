@@ -14,16 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.conf.urls import include, re_path
+from django.conf.urls import include
+from django.urls import re_path, path
 from rest_framework.routers import DefaultRouter
-from ..client.views import MRTViewSet
-
+from shadebackend.client import views
 
 router = DefaultRouter()
-router.register(MRTViewSet, basename="MRT")
+# router.register(views.MRTViewSet, basename="MRT")
 
 urlpatterns = [
     re_path('admin/', admin.site.urls),
     re_path('api/', include(router.urls)),
-    re_path('api/mrt', include(router.urls))
+    re_path('api/mrt', include(router.urls)),
+    path('api/route/<str:coords>', views.get_route, name='route')
 ]
