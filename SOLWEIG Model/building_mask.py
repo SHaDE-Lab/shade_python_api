@@ -14,8 +14,8 @@ def adjustWithMask(maskshpfn, rasterfn, newrasterfn):
         for g in shapes
     ]
 
-    with rasterio.open(rasterfn) as src:
-        out_image, out_transform = rasterio.mask.mask(src, geoms2d, nodata=600, invert=True) #Maybe have to change invert to false
+    with rasterio.open(rasterfn, 'r') as src:
+        out_image, out_transform = rasterio.mask.mask(src, geoms2d, nodata=10000, invert=True) #Maybe have to change invert to false
         out_meta = src.meta
 
     out_meta.update({"driver": "GTiff",
@@ -28,8 +28,8 @@ def adjustWithMask(maskshpfn, rasterfn, newrasterfn):
 
 
 if __name__ == "__main__":
-    maskshpfn = 'Maps/Tempe_buildings_NAD.shp'
-    rasterfn = 'Maps/2100202328_2100_mrt22.tif'
-    newrasterfn = 'Maps/MASKED_NAD_c2100202328_2100_mrt22.tif'
+    maskshpfn = 'Maps/Tempe_MaskedBuildingsRoads.shp'
+    rasterfn = 'output/2023-4-8-2100_mrt.tif'
+    newrasterfn = 'output/masked_2023-4-8-2100_mrt.tif'
 
     adjustWithMask(maskshpfn, rasterfn, newrasterfn)

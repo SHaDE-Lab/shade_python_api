@@ -18,7 +18,6 @@ def coord2pixelOffset(rasterfn, lat, long):
     lat, long = transformer.transform(lat, long)
     geotransform = raster.transform
     lat, long = geotransform * (lat, long)
-    #
 
     return lat, long
 

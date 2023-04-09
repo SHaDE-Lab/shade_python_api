@@ -66,8 +66,7 @@ def createPath(CostSurfacefn, costSurfaceArray, startCoord, stopCoord):
     stopIndexX, stopIndexY = coord2pixelOffset(CostSurfacefn, stopCoordX, stopCoordY)
 
     # create path
-    indices, weight = route_through_array(costSurfaceArray, (startIndexX, startIndexY), (stopIndexX, stopIndexY),
-                                          geometric=True, fully_connected=True)
+    indices, weight = route_through_array(costSurfaceArray, (startIndexX, startIndexY), (stopIndexX, stopIndexY))
     return indices, weight
 
 def getRouteCoords(CostSurfacefn, startCoord, stopCoord, outputPathfn=None):
@@ -92,10 +91,7 @@ def getRouteCoords(CostSurfacefn, startCoord, stopCoord, outputPathfn=None):
 # start/stop is a cooridnate in wgs84 (long, lat)
 # outputPath is a file name for the output tif file
 def getRoute(startCoord, stopCoord, dateTimeString):
-    #CostSurfacefn = 'shadebackend/client/output/{0}_mrt.tif'.format(dateTimeString) # expected format is "2023-03-30_12:00"
-    #print(CostSurfacefn)
-    #CostSurfacefn = 'shade_python_api\shadebackend\client\output\2023-4-8-2100_mrt.tif'
-    CostSurfacefn = 'client\output\masked_2023-4-8-2100_mrt.tif'
+    CostSurfacefn = f'client\output\masked_{dateTimeString}_mrt.tif'
     startCoord = startCoord  # start point in wgs84 (long, lat)
     stopCoord = stopCoord  # psych north in wgs84 (long, lat)
     # outputPathfn = 'Maps/PathFromBrickyardToNobleTestNAD.tif'
