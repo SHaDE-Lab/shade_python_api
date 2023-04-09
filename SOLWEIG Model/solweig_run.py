@@ -7,7 +7,7 @@ import rasterio as rio
 import requests
 from datetime import date
 import solweig_mrt as sol
-
+import building_mask
 
 def convert_datetime(datetime):
     # ex '2023-01-29 18:00:00' in UTC
@@ -141,11 +141,16 @@ def run_solweig():
 
     rt.close
 
-    rt = rio.open('output/test.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
-                  crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype)
-    rt.write(mrt, 1)
+    maskshpfn = 'Maps/Tempe_MaskedBuildingsRoads.shp'
+    rasterfn = root + '_mrt.tif'
+    newrasterfn = root + 'MASKED' + '_mrt.tif'
 
-    rt.close
+    building_mask.adjustWithMask(maskshpfn, rasterfn, newrasterfn)
+
+    # rt = rio.open('output/test.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
+    #               crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype)
+    # rt.write(mrt, 1)
+    #
+    # rt.close
 
 
-run_solweig()
