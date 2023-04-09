@@ -73,6 +73,4 @@ if __name__ == "__main__":
     stopCoord = (345479.425,1267799.626)
     outputPathfn = 'Path.tif'
     main(CostSurfacefn,outputPathfn,startCoord,stopCoord)
-Share
-Improve this answer
-Follow
+

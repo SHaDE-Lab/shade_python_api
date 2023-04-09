@@ -1,13 +1,13 @@
 import fnmatch
+import json
 import os
 
-from solweig_mrt import *
-import requests
-import json
 import pandas as pd
-from datetime import datetime, timedelta
 import rasterio as rio
+import requests
+from datetime import date
 import solweig_mrt as sol
+
 
 def convert_datetime(datetime):
     # ex '2023-01-29 18:00:00' in UTC
@@ -50,7 +50,7 @@ def open_files():
 #TODO - Modify this function when scheduling aws jobs to accept date and time
 def run_solweig():
     # Get Tomorrow's Dates
-    presentday = datetime.now()
+    presentday = date.today()
 
     tomorrow = presentday
     # gets time at today at 21 UTC  2pm AZ time
@@ -133,10 +133,19 @@ def run_solweig():
     # else:
     #     root = str(hour) + '00' +  str(year) + str(month) + str(day) + '_' + str(hour) + '00'
 
-    root = 'output/' + str(year) + '-' + str(month) + '-' + str(day) + '_' + str(hour) + ':00'
+    root = 'output/' + str(year) + '-' + str(month) + '-' + str(day) + '-' + str(hour) + '00'
 
     rt = rio.open(root+'_mrt.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
                   crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype)
     rt.write(mrt, 1)
 
     rt.close
+
+    rt = rio.open('output/test.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
+                  crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype)
+    rt.write(mrt, 1)
+
+    rt.close
+
+
+run_solweig()
