@@ -30,6 +30,6 @@ def adjustWithMask(maskshpfn, rasterfn, newrasterfn):
 if __name__ == "__main__":
     maskshpfn = 'Maps/Tempe_MaskedBuildingsRoads.shp'
     rasterfn = 'output/2023-4-8-2100_mrt.tif'
-    newrasterfn = 'output/masked_2023-4-8-2100_mrt.tif'
+    newrasterfn = 'output/masked-2023-4-8-2100-mrt.tif'
 
     adjustWithMask(maskshpfn, rasterfn, newrasterfn)

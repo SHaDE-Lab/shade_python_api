@@ -87,11 +87,20 @@ def getRouteCoords(CostSurfacefn, startCoord, stopCoord, outputPathfn=None):
     coords = [transformer.transform(cx, cy)for (cx,cy) in coords]
     return coords
 
+import os
 # costsurfacefn is the solweig mrt tif file generated
 # start/stop is a cooridnate in wgs84 (long, lat)
 # outputPath is a file name for the output tif file
 def getRoute(startCoord, stopCoord, dateTimeString):
-    CostSurfacefn = f'client\output\masked_{dateTimeString}_mrt.tif'
+    # check if os is unix or windows
+    if os.name == 'nt':
+        CostSurfacefn = f'client\\output\\masked_{dateTimeString}_mrt.tif'
+    else:
+        CostSurfacefn = f'client/output/masked_{dateTimeString}_mrt.tif'
+
+    # check if file exists
+    if not os.path.exists(CostSurfacefn):
+        print('File does not exist')
     startCoord = startCoord  # start point in wgs84 (long, lat)
     stopCoord = stopCoord  # psych north in wgs84 (long, lat)
     # outputPathfn = 'Maps/PathFromBrickyardToNobleTestNAD.tif'
