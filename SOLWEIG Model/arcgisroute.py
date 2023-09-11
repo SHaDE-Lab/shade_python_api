@@ -119,7 +119,7 @@ def getRouteAStar(startCoord, stopCoord, dateTimeString):
     mrt_file_path = 'output/{0}_mrt.tif'.format(dateTimeString)  # expected format is "2023-03-30_12:00"
     startCoord = startCoord  # start point in wgs84 (long, lat)
     stopCoord = stopCoord  # psych north in wgs84 (long, lat)
-    down_sample_rate = 5
+    down_sample_rate = 3
 
     print('reading files')
     # Load mean radiant temperature raster
