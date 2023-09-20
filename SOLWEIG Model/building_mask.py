@@ -2,8 +2,9 @@ import fiona
 import rasterio
 import rasterio.mask
 
-def adjustWithMask(maskshpfn, rasterfn, newrasterfn):
-    with fiona.open(maskshpfn, "r") as shapefile:
+
+def adjustWithMask(mask_shape_file_name, rasterfn, newrasterfn):
+    with fiona.open(mask_shape_file_name, "r") as shapefile:
         shapes = [feature["geometry"] for feature in shapefile]
 
     geoms2d = [
@@ -15,13 +16,14 @@ def adjustWithMask(maskshpfn, rasterfn, newrasterfn):
     ]
 
     with rasterio.open(rasterfn, 'r') as src:
-        out_image, out_transform = rasterio.mask.mask(src, geoms2d, nodata=10000, invert=True) #Maybe have to change invert to false
+        out_image, out_transform = rasterio.mask.mask(src, geoms2d, nodata=10000,
+                                                      invert=True)  # Maybe have to change invert to false
         out_meta = src.meta
 
     out_meta.update({"driver": "GTiff",
-                    "height": out_image.shape[1],
-                    "width": out_image.shape[2],
-                    "transform": out_transform})
+                     "height": out_image.shape[1],
+                     "width": out_image.shape[2],
+                     "transform": out_transform})
 
     with rasterio.open(newrasterfn, "w", **out_meta) as dest:
         dest.write(out_image)
