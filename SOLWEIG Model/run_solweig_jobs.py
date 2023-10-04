@@ -12,6 +12,5 @@ def jobs_for_24hrs():
 sc.every().day.at("18:00").do(jobs_for_24hrs)
 
 while True:
-
     sc.run_pending()
     time.sleep(1)

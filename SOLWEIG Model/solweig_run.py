@@ -2,15 +2,12 @@ import fnmatch
 import json
 import os
 
-import fiona
 import pandas as pd
-import rasterio
 import rasterio as rio
 import requests
 from datetime import date
 import solweig_mrt as sol
-import building_mask
-import rasterio.mask
+
 
 def convert_datetime(datetime):
     # ex '2023-01-29 18:00:00' in UTC
@@ -23,8 +20,10 @@ def convert_datetime(datetime):
     minu = timetuple.tm_min
     return year, month, day, doy, hour, minu
 
+
 def open_files():
-    # dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svfveg, svfNveg,svfEveg, svfSveg,svfWveg, svfaveg, svfEaveg, svfSaveg, svfWaveg,svfNaveg,walls,dirwalls
+    # dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svfveg, svfNveg,svfEveg, svfSveg,svfWveg, svfaveg,
+    # svfEaveg, svfSaveg, svfWaveg,svfNaveg,walls,dirwalls
     svf_walls_paths = 'tempe_camp_svfs/'
     files_list = [svf_walls_paths + files for files in os.listdir(svf_walls_paths)]
 
@@ -48,9 +47,10 @@ def open_files():
     SvfNaveg = rio.open(fnmatch.filter(files_list, '*svfNaveg_al.tif')[0])
     Walls = rio.open(fnmatch.filter(files_list, '*_walls_al.tif')[0])
     Dirwalls = rio.open(fnmatch.filter(files_list, '*_dirwalls_al.tif')[0])
-    return DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS,Svfveg,SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls
+    return DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls
 
-#TODO - Modify this function when scheduling aws jobs to accept date and time
+
+# TODO - Modify this function when scheduling aws jobs to accept date and time
 def run_solweig():
     # Get Tomorrow's Dates
     presentday = date.today()
@@ -75,7 +75,6 @@ def run_solweig():
     print("Response Reason:", r.reason)
     print("Response Reason:", r.content)
 
-
     # Processing Response into Panda DataFrame
     weather_data = json.loads(r.json()['data'])
     df = pd.DataFrame(index=pd.to_datetime(weather_data['index'],
@@ -83,8 +82,8 @@ def run_solweig():
                       data=weather_data['data'],
                       columns=weather_data['columns'])
 
-    #open files
-    DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS,Svfveg,SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls = open_files()
+    # open files
+    DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls = open_files()
 
     # read the rasters
     dsm = DSM.read(1)
@@ -108,7 +107,7 @@ def run_solweig():
     walls = Walls.read(1)
     dirwalls = Dirwalls.read(1)
 
-    # API and hardcoded data
+    # API andhardcoded  data
     # time in UTC (MST: UTC - 7:00)
     datetime = tomorrow_ts
     Ws = df.loc[datetime]['wind_speed (m/s)']
@@ -124,29 +123,20 @@ def run_solweig():
     trans = 3
 
     if DSM.bounds == Dem.bounds == Vegdsm.bounds:  # simple sanity check here to make sure rasters are aligned
-        rez = sol.Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS, svfveg, svfNveg, svfEveg,
+        rez = sol.Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS, svfveg, svfNveg,
+                                     svfEveg,
                                      svfSveg, svfWveg, svfaveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, walls, dirwalls,
                                      location, tzone, year, month, day, doy, hour, minu, Ws, Ta, RH,
                                      radG, Twater=15.0, ani=0, cyl=1, usevegdem=1, onlyglobal=1, elvis=0, landcover=0,
                                      lc_grid=None)
     mrt = rez['Tmrt']
 
-    # if hour < 10:
-    #     root = '0' + str(hour) + '00' + str(year) + '_' + str(month) + '_' + str(day) + '_0' + str(hour) + '00'
-    # else:
-    #     root = str(hour) + '00' +  str(year) + str(month) + str(day) + '_' + str(hour) + '00'
-
     root = 'output/' + str(year) + '-' + str(month) + '-' + str(day) + '-' + str(hour) + '00'
 
-    rt = rio.open(root+'_mrt.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
+    rt = rio.open(root + '_mrt.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
                   crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype)
     rt.write(mrt, 1)
     rt.close
 
-    # maskshpfn = 'Maps/Tempe_MaskedBuildingsRoads.shp'
-    # rasterfn = root + '_mrt.tif'
-    # newrasterfn = 'output/masked_' + str(year) + '-' + str(month) + '-' + str(day) + '-' + str(hour) + '00'
-    #
-    # building_mask.adjustWithMask(maskshpfn, rasterfn, newrasterfn)
 
 run_solweig()
