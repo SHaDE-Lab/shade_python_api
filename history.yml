@@ -1,0 +1,13 @@
+name: ox
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - osmnx
+  - scikit-image
+  - schedule
+  - pysolar
+  - django
+  - djangorestframework
+  - django-cors-headers
+prefix: /Users/evancrabtree/opt/anaconda3/envs/ox
