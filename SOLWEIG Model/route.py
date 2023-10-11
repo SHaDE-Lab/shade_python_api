@@ -2,7 +2,7 @@ import gdal, osr
 from skimage.graph import route_through_array
 import numpy as np
 
-
+# depprecated in preference of arcgisroute.py
 def raster2array(rasterfn):
     raster = gdal.Open(rasterfn)
     band = raster.GetRasterBand(1)

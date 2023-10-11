@@ -1,6 +1,7 @@
 import fiona
 import rasterio
 import rasterio.mask
+# THIS IS DEPRECATED DO NOT USE
 
 
 def adjustWithMask(mask_shape_file_name, rasterfn, newrasterfn):
