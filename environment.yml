@@ -190,4 +190,4 @@ dependencies:
   - pip:
     - django-background-tasks==1.2.5
     - django-compat==1.0.15
-prefix: /Users/evancrabtree/opt/anaconda3/envs/ox
+prefix: /Users/femmott/anaconda3/envs/ox

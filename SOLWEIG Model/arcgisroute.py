@@ -40,7 +40,13 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
     ox.save_graphml(G, 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked'))
     return G
 
-
+def make_walk_only_graph(mean_radiant_temp, date_time_string):
+    #calculate walk only graph edit stuff out based on walk
+    #get route - add parameter, mode of transit String?, call appropriate make graph based on mode of transit
+    #Testing, test walk only vs non walk only with different modes of transportation
+    #replace network call loaded from disk but its local so not the same but like scaled would be different
+    #edit to remove walk only zone/add some type of marker to make walk only
+    #draw bounding box around forrest, sdfc, above tyler, schwada
 def get_route(start_coord, stop_coord, date_time_string):
     print('starting route')
 
