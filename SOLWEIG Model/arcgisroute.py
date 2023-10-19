@@ -41,44 +41,53 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
     return G
 
 def make_walk_only_graph(mean_radiant_temp, date_time_string):
-    #calculate walk only graph edit stuff out based on walk
-    #get route - add parameter, mode of transit String?, call appropriate make graph based on mode of transit
-    #Testing, test walk only vs non walk only with different modes of transportation
-    #replace network call loaded from disk but its local so not the same but like scaled would be different
-    #edit to remove walk only zone/add some type of marker to make walk only
-    #draw bounding box around forrest, sdfc, above tyler, schwada
-def get_route(start_coord, stop_coord, date_time_string):
+    #bounding box of tempe campus
+    north = 33.42796506379531
+    west = -111.94015084151006
+
+    south = 33.41592636331673
+    east = -111.92634308211977
+
+def get_route(start_coord, stop_coord, date_time_string, mode_of_transportation):
     print('starting route')
 
     print('reading files')
+    if mode_of_transportation == "walk":
+        # if the graph file exists, load it, otherwise make it
+        graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
+        if os.path.exists(graph_path):
+            attribute_types = {'cost': float}
+            G = ox.load_graphml(graph_path, edge_dtypes=attribute_types)
+            print('graph loaded')
+        else:
+            mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30_12:00"
+            # Create a graph representing the raster cells and their connections
+            with rasterio.open(mrt_file_path) as src:
+                G = make_walking_network_graph(src, date_time_string)
+                print('made graph')
+        print('finding path')
+        path_time = time.time()
+        transformer = Transformer.from_crs("EPSG:4326", "EPSG:26912", always_xy=True)
+        # Find the nearest network nodes to the origin and destination
+        long, lat = transformer.transform(start_coord[0], start_coord[1])
+        orig_node = ox.distance.nearest_nodes(G, long, lat)
+        long, lat = transformer.transform(stop_coord[0], stop_coord[1])
+        dest_node = ox.distance.nearest_nodes(G, long, lat)
+        # Calculate the route using NetworkX's shortest_path function
+        route = nx.shortest_path(G, orig_node, dest_node, weight='cost')
+        print('path found in {0}'.format(time.time() - path_time))
+        # Convert the route to a GeoDataFrame# Plot the graph with the route highlighted
+        ox.plot_graph_route(G, route)
+    #else:
+        #get route - add parameter, mode of transit String?, call appropriate make graph based on mode of transit
+        #make new graph with walk only nodes removed by
+        # replace network call loaded from disk but its local so not the same but like scaled would be different
+        # edit to remove walk only zone/add some type of marker to make walk only
+        # draw bounding box around forrest, sdfc, above tyler, left of schwada
 
-    # if the graph file exists, load it, otherwise make it
-    graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
-    if os.path.exists(graph_path):
-        attribute_types = {'cost': float}
-        G = ox.load_graphml(graph_path, edge_dtypes=attribute_types)
-        print('graph loaded')
-    else:
-        mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30_12:00"
-        # Create a graph representing the raster cells and their connections
-        with rasterio.open(mrt_file_path) as src:
-            G = make_walking_network_graph(src, date_time_string)
-            print('made graph')
-    print('finding path')
-    path_time = time.time()
-    transformer = Transformer.from_crs("EPSG:4326", "EPSG:26912", always_xy=True)
-    # Find the nearest network nodes to the origin and destination
-    long, lat = transformer.transform(start_coord[0], start_coord[1])
-    orig_node = ox.distance.nearest_nodes(G, long, lat)
-    long, lat = transformer.transform(stop_coord[0], stop_coord[1])
-    dest_node = ox.distance.nearest_nodes(G, long, lat)
-    # Calculate the route using NetworkX's shortest_path function
-    route = nx.shortest_path(G, orig_node, dest_node, weight='cost')
-    print('path found in {0}'.format(time.time() - path_time))
-    # Convert the route to a GeoDataFrame# Plot the graph with the route highlighted
-    ox.plot_graph_route(G, route)
+    # Testing, test walk only vs non walk only with different modes of transportation
 
 
 brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
 psych_north = (-111.92961401637315, 33.42070688780706)  # psych north in wgs84 (long, lat)
-get_route(brickyard, psych_north, '2023-4-8-2100')
+get_route(brickyard, psych_north, '2023-4-8-2100', "walk")

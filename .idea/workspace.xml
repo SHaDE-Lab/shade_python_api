@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb13dce2-3ff2-4a3f-ac0a-ae880e504f47" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shade_python_api.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shade_python_api.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SOLWEIG Model/arcgisroute.py" beforeDir="false" afterPath="$PROJECT_DIR$/SOLWEIG Model/arcgisroute.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/environment.yml" beforeDir="false" afterPath="$PROJECT_DIR$/environment.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +33,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "fletcher/walk__only__graph",
     "last_opened_file_path": "/Users/femmott/Documents/GitHub/shade_python_api",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -121,7 +117,7 @@
       <workItem from="1681680520237" duration="358000" />
       <workItem from="1681680888386" duration="4041000" />
       <workItem from="1696981888831" duration="595000" />
-      <workItem from="1697323040185" duration="6261000" />
+      <workItem from="1697323040185" duration="10509000" />
     </task>
     <servers />
   </component>
