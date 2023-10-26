@@ -1,15 +1,14 @@
 import os
 
-from pyproj import Transformer
-import networkx as nx
 import rasterio
+from pyproj import Transformer
 import time
 import osmnx as ox
+from shapely.geometry import LineString
 
 def convert_to_pixel(lat, long, raster):
     # Get the pixel coordinates from the lat long
     return raster.index(lat, long)
-
 
 def make_walking_network_graph(mean_radiant_temp, date_time_string):
     # bounding box of tempe campus
@@ -18,25 +17,52 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
 
     south = 33.41592636331673
     east = -111.92634308211977
+    granularity = 1
 
     ox.settings.use_cache = True
     G = ox.graph_from_bbox(north, south, east, west, network_type='walk')
     G = ox.project_graph(G)
     ox.plot_graph(G)
     mrt_data = mean_radiant_temp.read(1)
+
     for u, v, data in G.edges(data=True):
-        # Get the coordinates of the edge's nodes
-        u_coords = G.nodes[u]['x'], G.nodes[u]['y']
-        v_coords = G.nodes[v]['x'], G.nodes[v]['y']
-        # Convert coordinates to indices based on your grid or array
-        u = convert_to_pixel(u_coords[0], u_coords[1], mean_radiant_temp)
-        v = convert_to_pixel(v_coords[0], v_coords[1], mean_radiant_temp)
-        # Calculate the mean MRT value along the edge
-        mean_mrt_value = (max(mrt_data[u], 0) + max(mrt_data[v], 0)) / 2.0
-        edge_cost = mean_mrt_value
+        # num samples is the edge distance
+        if 'geometry' in data:
+            # Get the edge's geometry as a LINESTRING
+            edge_geometry = data['geometry']
+
+            # create a LineString object
+            edge_line = LineString(edge_geometry)
+            num_samples = int(edge_line.length * granularity)
+            num_samples = num_samples if num_samples > 0 else 1
+            # Sample points along the edge's LineString
+            total_mrt = 0.0
+            for i in range(num_samples + 1):
+                alpha = i / num_samples
+                # Interpolate the point along the LineString
+                point = edge_line.interpolate(alpha, normalized=True)
+                coords = (point.x, point.y)
+                u = convert_to_pixel(coords[0], coords[1], mean_radiant_temp)
+                total_mrt += max(mrt_data[u], 0)
+        else:
+            # If no 'geometry' key, interpolate between u and v
+            total_mrt = 0.0
+            u_coords = (G.nodes[u]['x'], G.nodes[u]['y'])
+            v_coords = (G.nodes[v]['x'], G.nodes[v]['y'])
+            edge_length = ox.distance.euclidean(u_coords[1], u_coords[0], v_coords[1], v_coords[0])
+            num_samples = int(edge_length * granularity)
+            num_samples = num_samples if num_samples > 0 else 1
+            for i in range(num_samples + 1):
+                alpha = i / num_samples
+                coords = (u_coords[0] + alpha * (v_coords[0] - u_coords[0]), v_coords[1] + alpha * (v_coords[1] - u_coords[1]))
+                u = convert_to_pixel(coords[0], coords[1], mean_radiant_temp)
+                total_mrt += max(mrt_data[u], 0)
+
+        mean_mrt_value = total_mrt / (num_samples + 1)
+
         # Add the custom MRT attribute and cost attribute to the edge
         data['mrt'] = mean_mrt_value
-        data['cost'] = edge_cost
+        data['cost'] = total_mrt
     ox.save_graphml(G, 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked'))
     return G
 
@@ -66,11 +92,14 @@ def get_route(start_coord, stop_coord, date_time_string):
     orig_node = ox.distance.nearest_nodes(G, long, lat)
     long, lat = transformer.transform(stop_coord[0], stop_coord[1])
     dest_node = ox.distance.nearest_nodes(G, long, lat)
-    # Calculate the route using NetworkX's shortest_path function
-    route = nx.shortest_path(G, orig_node, dest_node, weight='cost')
+    # Calculate the route using Dijkstra's algorithm (shortest path)
+    route = ox.routing.shortest_path(G, orig_node, dest_node, weight='cost')
+    # route is list of node IDs constituting the shortest path
+    print(route)
     print('path found in {0}'.format(time.time() - path_time))
     # Convert the route to a GeoDataFrame# Plot the graph with the route highlighted
     ox.plot_graph_route(G, route)
+
 
 
 brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
