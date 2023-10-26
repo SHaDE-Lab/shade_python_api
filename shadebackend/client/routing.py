@@ -6,8 +6,6 @@ import rasterio
 import time
 import osmnx as ox
 
-
-
 def convert_to_pixel(lat, long, raster):
     # Get the pixel coordinates from the lat long
     return raster.index(lat, long)
@@ -80,6 +78,6 @@ def calculate_route(start_coord, stop_coord, date_time_string):
     return route
 
 
-brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
-psych_north = (-111.92961401637315, 33.42070688780706)  # psych north in wgs84 (long, lat)
-calculate_route(brickyard, psych_north, '2023-4-8-2100')
+# brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
+# psych_north = (-111.92961401637315, 33.42070688780706)  # psych north in wgs84 (long, lat)
+# calculate_route(brickyard, psych_north, '2023-4-8-2100')
