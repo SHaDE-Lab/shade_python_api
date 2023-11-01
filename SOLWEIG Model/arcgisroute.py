@@ -5,6 +5,7 @@ from pyproj import Transformer
 import time
 import osmnx as ox
 from shapely.geometry import LineString
+import simplekml
 
 def convert_to_pixel(lat, long, raster):
     # Get the pixel coordinates from the lat long
@@ -100,8 +101,52 @@ def get_route(start_coord, stop_coord, date_time_string):
     # Convert the route to a GeoDataFrame# Plot the graph with the route highlighted
     ox.plot_graph_route(G, route)
 
+    # convert the route to a kml file
+    kml = convert_to_kml(G, route)
 
+    # calculate stats from the route
+    statistics = calculate_statistics(G, route)
+    print(statistics)
+    return kml, statistics
+
+def convert_to_kml(G, route):
+    kml = simplekml.Kml()
+    for i in range(len(route) - 1):
+        source_node = route[i]
+        target_node = route[i + 1]
+        # Use .edges() to get edge data for the current pair of nodes
+        edge_data = G.get_edge_data(source_node, target_node)[0]
+        if edge_data is not None:
+            # Access the edge attributes
+            # Create a placemark for the edge with name and coordinates
+            name = edge_data.get('name', 'unnamed')
+            # Get the coordinates of the source and target nodes
+            source_coords = (G.nodes[source_node]['x'], G.nodes[source_node]['y'])
+            target_coords = (G.nodes[target_node]['x'], G.nodes[target_node]['y'])
+
+            # Create a LineString in the KML
+            coords = [source_coords, target_coords]
+            kml.newlinestring(name=name, coords=coords)
+    kml.save('output/route.kml')
+    return kml
+
+def calculate_statistics(G, route):
+    # calculate the length of the route
+    length = 0.0
+    # calculate the total mrt of the route
+    mrt = 0.0
+    for i in range(len(route) - 1):
+        source_node = route[i]
+        target_node = route[i + 1]
+        # Use .edges() to get edge data for the current pair of nodes
+        edge = G.get_edge_data(source_node, target_node)[0]
+        length += float(edge['length'])
+        mrt += float(edge['mrt'])
+    average_mrt = mrt / (len(route) - 1)
+    # return stats dictionary
+    return {'length': length, 'mrt': mrt, 'average_mrt': average_mrt}
 
 brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
 psych_north = (-111.92961401637315, 33.42070688780706)  # psych north in wgs84 (long, lat)
-get_route(brickyard, psych_north, '2023-4-8-2100')
+date_time_string = '2023-4-8-2100'
+get_route(brickyard, psych_north, date_time_string)
