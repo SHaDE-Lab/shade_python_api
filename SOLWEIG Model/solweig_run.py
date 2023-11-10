@@ -138,5 +138,5 @@ def run_solweig():
     rt.write(mrt, 1)
     rt.close
 
-
-run_solweig()
+if __name__ == '__main__':
+    run_solweig()

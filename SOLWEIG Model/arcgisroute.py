@@ -149,4 +149,6 @@ def calculate_statistics(G, route):
 brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
 psych_north = (-111.92961401637315, 33.42070688780706)  # psych north in wgs84 (long, lat)
 date_time_string = '2023-4-8-2100'
-get_route(brickyard, psych_north, date_time_string)
+
+if __name__ == '__main__':
+    get_route(brickyard, psych_north, date_time_string)
