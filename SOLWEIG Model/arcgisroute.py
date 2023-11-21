@@ -6,6 +6,7 @@ import time
 import osmnx as ox
 from shapely.geometry import LineString
 import simplekml
+import geojson
 
 default_mrt_file_path = 'output/2023-4-8-2100_mrt.tif'
 default_graph_path = 'output/2023-4-8-2100_graph_networked.graphml'
@@ -107,14 +108,26 @@ def get_route(start_coord, stop_coord, date_time_string):
     print('path found in {0}'.format(time.time() - path_time))
     # Convert the route to a GeoDataFrame# Plot the graph with the route highlighted
     ox.plot_graph_route(G, route)
-
     # convert the route to a kml file
     kml = convert_to_kml(G, route)
-
     # calculate stats from the route
     statistics = calculate_statistics(G, route)
     print(statistics)
-    return kml, statistics
+
+    geojson = convert_to_geoJSON(G, route)
+
+    return kml, statistics, geojson
+
+def convert_to_geoJSON(G, route):
+    # for each node in the route, get the lat/long
+    # for each node in the route, get the lat/long
+    route_coords = []
+    for node in route:
+        node_coords = ((G.nodes[node]['lon'], G.nodes[node]['lat']))
+        route_coords.append(node_coords)
+    # convert the route to a geojson
+    route_geojson = geojson.LineString(route_coords)
+    return route_geojson
 
 def convert_to_kml(G, route):
     kml = simplekml.Kml()
