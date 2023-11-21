@@ -1,12 +1,36 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from arcgisroute import get_route
+from flask_cors import CORS
+import json
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
-@app.route('/api/getRoute/<start>/<end>/<date_time>')
-def get_route_api(start, end, date_time):
-    kml, stats = get_route(start, end, date_time)
-    return jsonify({'kml': kml, 'stats': stats})
+@app.route('/api/route', methods=['GET'])
+def route_handler():
+    try:
+        # Convert the JSON data from the URL to a Python dictionary
+        # Get the JSON data from the query string
+        json_data = request.args.get('json_data')
+
+        # Parse the JSON data into a Python dictionary
+        data_dict = json.loads(json_data)
+
+        # Extract required values from the dictionary
+        start_lat = float(data_dict['startPoint'][0])
+        start_long = float(data_dict['startPoint'][1])
+        end_lat = float(data_dict['endPoint'][0])
+        end_long = float(data_dict['endPoint'][1])
+        start = (start_long, start_lat)
+        end = (end_long, end_lat)
+        date_time = data_dict['dateTime']
+        print(f"Received route request from {start} to {end} at {date_time}")
+        kml, stats = get_route(start, end, date_time)
+        return jsonify({'kml': kml, 'stats': stats})
+    except Exception as e:
+        # Handle errors appropriately
+        print(e)
+        return jsonify({'error': str(e)})
 
 @app.route('/')
 def hello_world():

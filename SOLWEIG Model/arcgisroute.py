@@ -7,6 +7,8 @@ import osmnx as ox
 from shapely.geometry import LineString
 import simplekml
 
+default_mrt_file_path = 'output/2023-4-8-2100_mrt.tif'
+default_graph_path = 'output/2023-4-8-2100_graph_networked.graphml'
 def convert_to_pixel(lat, long, raster):
     # Get the pixel coordinates from the lat long
     return raster.index(lat, long)
@@ -75,12 +77,17 @@ def get_route(start_coord, stop_coord, date_time_string):
 
     # if the graph file exists, load it, otherwise make it
     graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
-    if os.path.exists(graph_path):
-        attribute_types = {'cost': float}
+    mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30_12:00"
+    attribute_types = {'cost': float}
+
+    if not os.path.exists(mrt_file_path):
+        print('no mrt file found')
+        mrt_file_path = default_mrt_file_path
+        G = ox.load_graphml(default_graph_path, edge_dtypes=attribute_types)
+    elif os.path.exists(graph_path):
         G = ox.load_graphml(graph_path, edge_dtypes=attribute_types)
         print('graph loaded')
     else:
-        mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30_12:00"
         # Create a graph representing the raster cells and their connections
         with rasterio.open(mrt_file_path) as src:
             G = make_walking_network_graph(src, date_time_string)
@@ -128,7 +135,10 @@ def convert_to_kml(G, route):
             coords = [source_coords, target_coords]
             kml.newlinestring(name=name, coords=coords)
     kml.save('output/route.kml')
-    return kml
+    # Save the KML to a string
+    kml_string = kml.kml()
+
+    return kml_string
 
 def calculate_statistics(G, route):
     # calculate the length of the route
