@@ -51,20 +51,13 @@ def open_files():
 
 
 # TODO - Modify this function when scheduling aws jobs to accept date and time
-def run_solweig():
-    # Get Tomorrow's Dates
-    presentday = date.today()
-
-    tomorrow = presentday
-    # gets time at today at 21 UTC  2pm AZ time
-    tomorrow_ts = pd.Timestamp(tomorrow).replace(hour=21, minute=0, second=0, microsecond=0)
-    print(tomorrow_ts)
+def run_solweig(time_to_run):
     # Geting data from API
     r = requests.get('https://api.oikolab.com/weather',
                      params={'param': ['wind_speed', 'temperature', 'relative_humidity', 'surface_solar_radiation'],
                              # Only Include Tomorrow's Data
-                             'start': tomorrow_ts.date(),
-                             'end': tomorrow_ts.date(),
+                             'start': time_to_run.date(),
+                             'end': time_to_run.date(),
                              # Tempe, AZ Location
                              'lat': 33.29,
                              'lon': -112.42,
@@ -109,14 +102,14 @@ def run_solweig():
 
     # API andhardcoded  data
     # time in UTC (MST: UTC - 7:00)
-    datetime = tomorrow_ts
+    datetime = time_to_run
     Ws = df.loc[datetime]['wind_speed (m/s)']
     Ta = df.loc[datetime]['temperature (degC)']
     RH = df.loc[datetime]['relative_humidity (0-1)'] * 100
     radG = df.loc[datetime]['surface_solar_radiation (W/m^2)']
     location = {'latitude': 33.29, 'longitude': -112.42}
 
-    year, month, day, doy, hour, minu = convert_datetime(datetime)
+    year, month, day, doy, hour, minu = convert_datetime(time_to_run)
     tzone = 'UTC'
 
     res = 1
