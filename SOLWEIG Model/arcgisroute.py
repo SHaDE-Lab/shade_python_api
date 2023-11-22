@@ -78,7 +78,7 @@ def get_route(start_coord, stop_coord, date_time_string):
 
     # if the graph file exists, load it, otherwise make it
     graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
-    mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30_12:00"
+    mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30-1200"
     attribute_types = {'cost': float}
 
     if not os.path.exists(mrt_file_path):

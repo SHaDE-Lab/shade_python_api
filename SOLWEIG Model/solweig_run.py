@@ -8,7 +8,6 @@ import requests
 from datetime import date
 import solweig_mrt as sol
 
-
 def convert_datetime(datetime):
     # ex '2023-01-29 18:00:00' in UTC
     timetuple = datetime.timetuple()
@@ -102,7 +101,10 @@ def run_solweig(time_to_run):
 
     # API andhardcoded  data
     # time in UTC (MST: UTC - 7:00)
-    datetime = time_to_run
+    print(df)
+    datetime = time_to_run.tz_convert(None)
+    print(datetime)
+    df.tz_localize(None)
     Ws = df.loc[datetime]['wind_speed (m/s)']
     Ta = df.loc[datetime]['temperature (degC)']
     RH = df.loc[datetime]['relative_humidity (0-1)'] * 100
@@ -124,7 +126,7 @@ def run_solweig(time_to_run):
                                      lc_grid=None)
     mrt = rez['Tmrt']
 
-    root = 'output/' + str(year) + '-' + str(month) + '-' + str(day) + '-' + str(hour) + '00'
+    root = 'output/' + time_to_run.tz_convert(None).strftime('%Y-%m-%d-%H00')
 
     rt = rio.open(root + '_mrt.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
                   crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype)
@@ -132,4 +134,8 @@ def run_solweig(time_to_run):
     rt.close
 
 if __name__ == '__main__':
-    run_solweig()
+    today = datetime.now(timezone.utc)
+    print(today)
+    # gets the timestamp but zeros out the minutes, seconds, and microseconds
+    today_ts = pd.Timestamp(today).replace(minute=0, second=0, microsecond=0)
+    run_solweig_hourly(today_ts)
