@@ -6,7 +6,10 @@ import time
 import osmnx as ox
 from shapely.geometry import LineString
 import simplekml
+import geojson
 
+default_mrt_file_path = 'output/2023-4-8-2100_mrt.tif'
+default_graph_path = 'output/2023-4-8-2100_graph_networked.graphml'
 def convert_to_pixel(lat, long, raster):
     # Get the pixel coordinates from the lat long
     return raster.index(lat, long)
@@ -69,23 +72,20 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
 
 
 def get_route(start_coord, stop_coord, date_time_string):
-    print('starting route')
-
-    print('reading files')
-
     # if the graph file exists, load it, otherwise make it
     graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
-    if os.path.exists(graph_path):
-        attribute_types = {'cost': float}
+    mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30-1200"
+    attribute_types = {'cost': float}
+
+    if not os.path.exists(mrt_file_path):
+        mrt_file_path = default_mrt_file_path
+        G = ox.load_graphml(default_graph_path, edge_dtypes=attribute_types)
+    elif os.path.exists(graph_path):
         G = ox.load_graphml(graph_path, edge_dtypes=attribute_types)
-        print('graph loaded')
     else:
-        mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30_12:00"
         # Create a graph representing the raster cells and their connections
         with rasterio.open(mrt_file_path) as src:
             G = make_walking_network_graph(src, date_time_string)
-            print('made graph')
-    print('finding path')
     path_time = time.time()
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:26912", always_xy=True)
     # Find the nearest network nodes to the origin and destination
@@ -96,18 +96,29 @@ def get_route(start_coord, stop_coord, date_time_string):
     # Calculate the route using Dijkstra's algorithm (shortest path)
     route = ox.routing.shortest_path(G, orig_node, dest_node, weight='cost')
     # route is list of node IDs constituting the shortest path
-    print(route)
     print('path found in {0}'.format(time.time() - path_time))
     # Convert the route to a GeoDataFrame# Plot the graph with the route highlighted
     ox.plot_graph_route(G, route)
-
     # convert the route to a kml file
     kml = convert_to_kml(G, route)
-
     # calculate stats from the route
     statistics = calculate_statistics(G, route)
     print(statistics)
-    return kml, statistics
+
+    geojson = convert_to_geoJSON(G, route)
+
+    return kml, statistics, geojson
+
+def convert_to_geoJSON(G, route):
+    # for each node in the route, get the lat/long
+    # for each node in the route, get the lat/long
+    route_coords = []
+    for node in route:
+        node_coords = ((G.nodes[node]['lon'], G.nodes[node]['lat']))
+        route_coords.append(node_coords)
+    # convert the route to a geojson
+    route_geojson = geojson.LineString(route_coords)
+    return route_geojson
 
 def convert_to_kml(G, route):
     kml = simplekml.Kml()
@@ -128,7 +139,10 @@ def convert_to_kml(G, route):
             coords = [source_coords, target_coords]
             kml.newlinestring(name=name, coords=coords)
     kml.save('output/route.kml')
-    return kml
+    # Save the KML to a string
+    kml_string = kml.kml()
+
+    return kml_string
 
 def calculate_statistics(G, route):
     # calculate the length of the route
@@ -146,7 +160,8 @@ def calculate_statistics(G, route):
     # return stats dictionary
     return {'length': length, 'mrt': mrt, 'average_mrt': average_mrt}
 
-# brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
-# psych_north = (-111.92961401637315, 33.42070688780706)  # psych north in wgs84 (long, lat)
-# date_time_string = '2023-4-8-2100'
-# get_route(brickyard, psych_north, date_time_string)
+if __name__ == '__main__':
+    brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
+    psych_north = (-111.92961401637315, 33.42070688780706)  # psych north in wgs84 (long, lat)
+    date_time_string = '2023-4-8-2100'
+    get_route(brickyard, psych_north, date_time_string)

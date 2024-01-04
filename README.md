@@ -2,9 +2,10 @@
 scripts for running solweig in jupyter notebooks
 
 Import the solweig_mrt.py into a jupyter notebook with "from solweig_mrt import*"
+You can also call `run_solweig(timestamp)` from `solweig_run.py``
 
 # Routing 
-ArcGisRoute.py contains all the routing logic
+routing.py contains all the routing logic
 
 # Solweig
 To run solweig just run the solweig_run.py script with `python solweig_run.py`
@@ -16,8 +17,7 @@ When adding api routes add it to this file try to abstract most of the logic to 
 Make sure flask is installed `pip install flask`
 You can run the server by cding to the directory and running `python server.py`
 
-# Hourly Jobs 
-
+# SOLWEIG Jobs 
 Running solweig and making the graphs are controlled by the `run_solweig_jobs.py` script.
 There are 3 params that it can take in:
 1. `hourly` this will run the solweig job and make the graphs for the current hour

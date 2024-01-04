@@ -7,6 +7,9 @@ import rasterio as rio
 import requests
 from datetime import date
 import solweig_mrt as sol
+from decouple import config
+
+OIKOLAB_KEY = config('OIKOLAB_KEY')
 
 def convert_datetime(datetime):
     # ex '2023-01-29 18:00:00' in UTC
@@ -61,7 +64,7 @@ def run_solweig(time_to_run):
                              'lat': 33.29,
                              'lon': -112.42,
                              # Plug in API Key From Discord (will put in .env later)
-                             'api-key': 'f56043c50c174dea9628ec8f280e8a11'}
+                             'api-key': OIKOLAB_KEY}
                      )
     print("Response Status:", r.status_code)
     print("Response Reason:", r.reason)
@@ -135,7 +138,7 @@ def run_solweig(time_to_run):
 
 if __name__ == '__main__':
     today = datetime.now(timezone.utc)
-    print(today)
+    print(f"Running SOLWEIG for ${today}")
     # gets the timestamp but zeros out the minutes, seconds, and microseconds
     today_ts = pd.Timestamp(today).replace(minute=0, second=0, microsecond=0)
-    run_solweig_hourly(today_ts)
+    run_solweig(today_ts)

@@ -26,6 +26,8 @@ def main():
         # gets the timestamp but zeros out the minutes, seconds, and microseconds
         today_ts = pd.Timestamp(today).replace(minute=0, second=0, microsecond=0)
         run_solweig_hourly(today_ts)
+    file_cleanup()
+
 
 def run_solweig_daily():
     # run solweig for all of the hours in the day
@@ -39,12 +41,7 @@ def run_solweig_daily():
 
 
 def run_solweig_hourly(today_ts):
-    print(today_ts)
-    print(today_ts.tz_convert(None))
     timekey = today_ts.tz_convert(None).strftime('%Y-%m-%d-%H00')
-    print(timekey)
-    #mean_radiant_temp = rasterio.open('output/{0}_mrt.tif'.format(timekey))
-
     # run solweig
     run_solweig(today_ts)
 
@@ -56,11 +53,14 @@ def run_solweig_hourly(today_ts):
     # generate the graph
     make_walking_network_graph(mean_radiant_temp, timekey)
 
+
+def file_cleanup():
     # clean up any existing files in the output directory
     for file in os.listdir('output'):
         # delete a file if the time stamp is before the current time
         if file.endswith('.tif') and file < datetime.now().strftime('%Y-%m-%d-%H00'):
             print('deleting {0}'.format(file))
+            # TODO DUMP TO LONG TERM STORAGE
             os.remove(os.path.join('output', file))
 
 
