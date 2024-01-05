@@ -1,15 +1,21 @@
 import fnmatch
 import json
 import os
+from os import environ, path
 
 import pandas as pd
 import rasterio as rio
 import requests
 from datetime import date
 import solweig_mrt as sol
-from decouple import config
+from dotenv import load_dotenv
 
-OIKOLAB_KEY = config('OIKOLAB_KEY')
+# Specificy a `.env` file containing key/value config values
+basedir = path.abspath(path.dirname(__file__))
+load_dotenv(path.join(basedir, ".env"))
+
+# General Config
+OIKOLAB_KEY = environ.get("OIKOLAB_KEY")
 
 def convert_datetime(datetime):
     # ex '2023-01-29 18:00:00' in UTC
