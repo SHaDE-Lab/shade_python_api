@@ -13,8 +13,6 @@ WORKDIR /app
 # Copy only the requirements file to the working directory
 COPY requirements.txt /app/
 
-RUN pwd
-
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
 

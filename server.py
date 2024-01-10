@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # Start a new thread for run_after_startup
     startup_thread = Thread(target=run_after_startup)
     startup_thread.start()
-    app.run(host="0.0.0.0",port=5000,debug=True)
+    app.run(host="0.0.0.0",port=5000,debug=True, threaded=True)
 
 
 @scheduler.task('interval', id='my_job', minutes=60)

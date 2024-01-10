@@ -66,10 +66,6 @@ def run_solweig_hourly(today_ts):
 
     # generate the graph
     make_walking_network_graph(mean_radiant_temp, timekey)
-    # Add the following lines at the end to create a signal file
-    with open('/app/.reboot_done', 'w') as signal_file:
-        signal_file.write('Reboot job completed\n')
-
 
 def file_cleanup():
     # clean up any existing files in the output directory
