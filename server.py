@@ -84,12 +84,16 @@ if __name__ == '__main__':
     scheduler.api_enabled = True
     scheduler.init_app(app)
     scheduler.start()
-    run_solweig_daily()
+    run_solweig_buildup()
     app.run(host="0.0.0.0",port=5000,debug=True)
 
 
-@scheduler.task('interval', id='my_job', minutes=60)
-def my_job():
+@scheduler.task('interval', id='hourly_job', minutes=60)
+def hourly_job():
     hour_from_now = datetime.now(timezone.utc) + timedelta(hours=1)
     hour_from_now = pd.Timestamp(hour_from_now).replace(minute=0, second=0, microsecond=0)
     run_solweig_hourly(hour_from_now)
+
+@scheduler.task('interval', id='daily_job', minutes=60*24)
+def daily_job():
+    run_solweig_daily(datetime.now(timezone.utc) + timedelta(days=3))
