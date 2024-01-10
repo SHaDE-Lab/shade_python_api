@@ -33,7 +33,7 @@ def convert_datetime(datetime):
 def open_files():
     # dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svfveg, svfNveg,svfEveg, svfSveg,svfWveg, svfaveg,
     # svfEaveg, svfSaveg, svfWaveg,svfNaveg,walls,dirwalls
-    svf_walls_paths = 'tempe_camp_svfs/'
+    svf_walls_paths = os.path.join(os.getcwd(), 'tempe_camp_svfs/')
     files_list = [svf_walls_paths + files for files in os.listdir(svf_walls_paths)]
 
     DSM = rio.open(fnmatch.filter(files_list, '*_dsm_al.tif')[0])
@@ -112,8 +112,10 @@ def run_solweig(time_to_run):
     # API andhardcoded  data
     # time in UTC (MST: UTC - 7:00)
     print(df)
-    datetime = time_to_run.tz_convert(None)
-    print(datetime)
+    print(time_to_run)
+
+    datetime = time_to_run.replace(tzinfo=None)
+
     df.tz_localize(None)
     Ws = df.loc[datetime]['wind_speed (m/s)']
     Ta = df.loc[datetime]['temperature (degC)']

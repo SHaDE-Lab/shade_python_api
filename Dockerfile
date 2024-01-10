@@ -1,23 +1,27 @@
-# Set base image (host OS)
+# Use an official Python runtime as a parent image
 FROM python:3.10
 
-# By default, listen on port 5000
-EXPOSE 5000/tcp
+# Install GDAL dependencies
+RUN apt-get update \
+    && apt-get install -y libgdal-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory in the container
+# Set the working directory to /app
 WORKDIR /app
 
-# copy the content of the local src directory to the working directory
-COPY . /app/
+# Copy only the requirements file to the working directory
+COPY requirements.txt /app/
 
-# Install any dependencies
-RUN apt-get update
+RUN pwd
 
-RUN apt-get install -y libgdal-dev
-
-RUN pip install GDAL==3.6.4
-
+# Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
 
-# Specify the command to run on container start
-CMD [ "python", "./server.py" ]
+# Copy the current directory contents into the container at /app
+COPY . /app/
+# Make port 5000 available to the world outside this container
+EXPOSE 5000
+
+# Run app.py when the container launches
+CMD ["python", "server.py"]

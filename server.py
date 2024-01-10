@@ -1,10 +1,17 @@
+from datetime import datetime, timezone, timedelta
 from flask import Flask, jsonify, request, Response
 from routing import get_route
 from flask_cors import CORS
 import json
+import pandas as pd
+from flask_apscheduler import APScheduler
+from threading import Thread
+
+from run_solweig_jobs import run_solweig_hourly, run_solweig_buildup
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+scheduler = APScheduler()
 
 @app.route('/api/route', methods=['GET'])
 def route_handler():
@@ -67,6 +74,28 @@ def get_kml():
 def hello_world():
     return {'message': 'Hello, World!'}
 
+def run_after_startup():
+    print("running solweig buildup")
+    run_solweig_buildup()
+    print("finished running solweig buildup")
+
 if __name__ == '__main__':
     print('starting server')
+    scheduler.api_enabled = True
+    scheduler.init_app(app)
+
+    # Start the scheduler in a separate thread
+    scheduler_thread = Thread(target=scheduler.start)
+    scheduler_thread.start()
+
+    # Start a new thread for run_after_startup
+    startup_thread = Thread(target=run_after_startup)
+    startup_thread.start()
     app.run(host="0.0.0.0",port=5000,debug=True)
+
+
+@scheduler.task('interval', id='my_job', minutes=60)
+def my_job():
+    hour_from_now = datetime.now(timezone.utc) + timedelta(hours=1)
+    hour_from_now = pd.Timestamp(hour_from_now).replace(minute=0, second=0, microsecond=0)
+    run_solweig_hourly(hour_from_now)
