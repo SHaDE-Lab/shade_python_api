@@ -7,7 +7,7 @@ import pandas as pd
 from flask_apscheduler import APScheduler
 from threading import Thread
 
-from run_solweig_jobs import run_solweig_hourly, run_solweig_buildup
+from run_solweig_jobs import run_solweig_hourly, run_solweig_buildup, run_solweig_daily
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -83,15 +83,9 @@ if __name__ == '__main__':
     print('starting server')
     scheduler.api_enabled = True
     scheduler.init_app(app)
-
-    # Start the scheduler in a separate thread
-    scheduler_thread = Thread(target=scheduler.start)
-    scheduler_thread.start()
-
-    # Start a new thread for run_after_startup
-    startup_thread = Thread(target=run_after_startup)
-    startup_thread.start()
-    app.run(host="0.0.0.0",port=5000,debug=True, threaded=True)
+    scheduler.start()
+    run_solweig_daily()
+    app.run(host="0.0.0.0",port=5000,debug=True)
 
 
 @scheduler.task('interval', id='my_job', minutes=60)
