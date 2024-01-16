@@ -5,22 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb13dce2-3ff2-4a3f-ac0a-ae880e504f47" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/output/2023-4-8-2100_graph_networked.graphml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/output/masked_2023-4-8-2100_mrt.tif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/solweig-generator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shade_python_api.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shade_python_api.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routing.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/routing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_solweig_jobs.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_solweig_jobs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/server/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/solweig-generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/solweig-generator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -299,7 +287,7 @@
       <workItem from="1701840927785" duration="4275000" />
       <workItem from="1705418752040" duration="3152000" />
       <workItem from="1705440820568" duration="562000" />
-      <workItem from="1705442605752" duration="4591000" />
+      <workItem from="1705442605752" duration="6488000" />
     </task>
     <servers />
   </component>
