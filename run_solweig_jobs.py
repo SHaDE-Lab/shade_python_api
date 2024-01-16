@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from solweig_run import run_solweig
-from routing import make_walking_network_graph
+from server.routing import make_walking_network_graph
 from datetime import datetime, timezone, timedelta
 import sys
 import pandas as pd
