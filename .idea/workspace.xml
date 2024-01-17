@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="eb13dce2-3ff2-4a3f-ac0a-ae880e504f47" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/diffusefraction.py" beforeDir="false" afterPath="$PROJECT_DIR$/diffusefraction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -285,7 +285,7 @@
       <workItem from="1701840927785" duration="4275000" />
       <workItem from="1705418752040" duration="3152000" />
       <workItem from="1705440820568" duration="562000" />
-      <workItem from="1705442605752" duration="7164000" />
+      <workItem from="1705442605752" duration="8354000" />
     </task>
     <servers />
   </component>

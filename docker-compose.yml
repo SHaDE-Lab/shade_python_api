@@ -5,6 +5,14 @@ services:
     build: .
     volumes:
       - data-volume:/app/output
+    deploy:
+      resources:
+        limits:
+          cpus: '6.0'
+          memory: '3G'
+        reservations:
+            cpus: '1.0'
+            memory: '1G'
   flask-app:
     build: ./server
     ports:
