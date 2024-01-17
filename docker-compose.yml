@@ -11,8 +11,8 @@ services:
           cpus: '6.0'
           memory: '3G'
         reservations:
-            cpus: '1.0'
-            memory: '1G'
+            cpus: '3.0'
+            memory: '2G'
   flask-app:
     build: ./server
     ports:
