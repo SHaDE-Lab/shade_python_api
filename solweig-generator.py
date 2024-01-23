@@ -27,8 +27,8 @@ if __name__ == "__main__":
     startup_function(output_folder)
 
     # Schedule the job to run every hour
-    schedule.every().hour.do(hourly_function(output_folder))
-    schedule.every().day.at("00:00").do((daily_function(output_folder)))
+    schedule.every().hour.do(hourly_function,output_folder)
+    schedule.every().day.at("00:00").do((daily_function,output_folder))
     while True:
         # Run pending jobs
         print("Checking for jobs", flush=True)
