@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <Placemark id="3">
+            <name>unnamed</name>
+            <LineString id="2">
+                <coordinates>412671.9284819786,3698655.7134887325,0.0 412676.4578068143,3698655.8499963237,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="5">
+            <name>unnamed</name>
+            <LineString id="4">
+                <coordinates>412676.4578068143,3698655.8499963237,0.0 412689.49203478266,3698647.449365204,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="7">
+            <name>unnamed</name>
+            <LineString id="6">
+                <coordinates>412689.49203478266,3698647.449365204,0.0 412689.4332595401,3698609.0179884415,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="9">
+            <name>unnamed</name>
+            <LineString id="8">
+                <coordinates>412689.4332595401,3698609.0179884415,0.0 412730.8779662185,3698610.451245211,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="11">
+            <name>unnamed</name>
+            <LineString id="10">
+                <coordinates>412730.8779662185,3698610.451245211,0.0 412770.2290731709,3698609.6526492294,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="13">
+            <name>unnamed</name>
+            <LineString id="12">
+                <coordinates>412770.2290731709,3698609.6526492294,0.0 412777.12860633736,3698609.7012936966,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="15">
+            <name>unnamed</name>
+            <LineString id="14">
+                <coordinates>412777.12860633736,3698609.7012936966,0.0 412785.6816433696,3698609.579793773,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="17">
+            <name>unnamed</name>
+            <LineString id="16">
+                <coordinates>412785.6816433696,3698609.579793773,0.0 412789.5405872184,3698609.611518786,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="19">
+            <name>unnamed</name>
+            <LineString id="18">
+                <coordinates>412789.5405872184,3698609.611518786,0.0 412854.75383751135,3698610.343083639,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="21">
+            <name>unnamed</name>
+            <LineString id="20">
+                <coordinates>412854.75383751135,3698610.343083639,0.0 412886.05005061976,3698610.2606737623,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="23">
+            <name>unnamed</name>
+            <LineString id="22">
+                <coordinates>412886.05005061976,3698610.2606737623,0.0 412909.8991952345,3698610.245434609,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="25">
+            <name>unnamed</name>
+            <LineString id="24">
+                <coordinates>412909.8991952345,3698610.245434609,0.0 412919.4472312234,3698610.1372680496,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="27">
+            <name>unnamed</name>
+            <LineString id="26">
+                <coordinates>412919.4472312234,3698610.1372680496,0.0 412929.3949473758,3698610.014423731,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="29">
+            <name>unnamed</name>
+            <LineString id="28">
+                <coordinates>412929.3949473758,3698610.014423731,0.0 412962.0365240954,3698611.683177221,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="31">
+            <name>unnamed</name>
+            <LineString id="30">
+                <coordinates>412962.0365240954,3698611.683177221,0.0 413063.9844972367,3698611.2206834583,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="33">
+            <name>unnamed</name>
+            <LineString id="32">
+                <coordinates>413063.9844972367,3698611.2206834583,0.0 413063.25091725,3698595.814616334,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="35">
+            <name>unnamed</name>
+            <LineString id="34">
+                <coordinates>413063.25091725,3698595.814616334,0.0 413064.28104967007,3698590.42755544,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="37">
+            <name>unnamed</name>
+            <LineString id="36">
+                <coordinates>413064.28104967007,3698590.42755544,0.0 413064.7207127685,3698529.704369599,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="39">
+            <name>unnamed</name>
+            <LineString id="38">
+                <coordinates>413064.7207127685,3698529.704369599,0.0 413066.7828186877,3698469.487751175,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="41">
+            <name>unnamed</name>
+            <LineString id="40">
+                <coordinates>413066.7828186877,3698469.487751175,0.0 413075.9176645926,3698470.980164888,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="43">
+            <name>unnamed</name>
+            <LineString id="42">
+                <coordinates>413075.9176645926,3698470.980164888,0.0 413087.5410057432,3698472.095397068,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="45">
+            <name>unnamed</name>
+            <LineString id="44">
+                <coordinates>413087.5410057432,3698472.095397068,0.0 413087.9764461741,3698469.85165829,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="47">
+            <name>unnamed</name>
+            <LineString id="46">
+                <coordinates>413087.9764461741,3698469.85165829,0.0 413165.8503857526,3698469.085535227,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="49">
+            <name>unnamed</name>
+            <LineString id="48">
+                <coordinates>413165.8503857526,3698469.085535227,0.0 413166.25790640083,3698462.695049241,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="51">
+            <name>unnamed</name>
+            <LineString id="50">
+                <coordinates>413166.25790640083,3698462.695049241,0.0 413166.801817342,3698452.8548958586,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="53">
+            <name>East University Drive</name>
+            <LineString id="52">
+                <coordinates>413166.801817342,3698452.8548958586,0.0 413179.95787638123,3698452.770034796,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="55">
+            <name>East University Drive</name>
+            <LineString id="54">
+                <coordinates>413179.95787638123,3698452.770034796,0.0 413237.011132883,3698452.779118649,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="57">
+            <name>East University Drive</name>
+            <LineString id="56">
+                <coordinates>413237.011132883,3698452.779118649,0.0 413518.57545456965,3698453.7386614857,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="59">
+            <name>unnamed</name>
+            <LineString id="58">
+                <coordinates>413518.57545456965,3698453.7386614857,0.0 413518.800765572,3698382.239752878,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="61">
+            <name>unnamed</name>
+            <LineString id="60">
+                <coordinates>413518.800765572,3698382.239752878,0.0 413520.8081632762,3698370.6900449134,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="63">
+            <name>McAllister Mall</name>
+            <LineString id="62">
+                <coordinates>413520.8081632762,3698370.6900449134,0.0 413520.51079604507,3698258.4133260604,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="65">
+            <name>unnamed</name>
+            <LineString id="64">
+                <coordinates>413520.51079604507,3698258.4133260604,0.0 413533.12814869155,3698258.367035173,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="67">
+            <name>McAllister Mall</name>
+            <LineString id="66">
+                <coordinates>413533.12814869155,3698258.367035173,0.0 413535.0524529788,3698293.6769150863,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="69">
+            <name>unnamed</name>
+            <LineString id="68">
+                <coordinates>413535.0524529788,3698293.6769150863,0.0 413560.7829890234,3698327.22162695,0.0</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>
