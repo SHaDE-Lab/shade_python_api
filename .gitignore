@@ -3,3 +3,6 @@
 .env
 /output/
 .idea/workspace.xml
+*.pyc
+*.xml
+*.iml

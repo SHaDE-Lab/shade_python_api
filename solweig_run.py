@@ -58,8 +58,28 @@ def open_files():
     Dirwalls = rio.open(fnmatch.filter(files_list, '*_dirwalls_al.tif')[0])
     return DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls
 
+def close_files( DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls):
+    DSM.close()
+    Vegdsm.close()
+    Dem.close()
+    Svf.close()
+    SvfN.close()
+    SvfW.close()
+    SvfE.close()
+    SvfS.close()
+    Svfveg.close()
+    SvfNveg.close()
+    SvfEveg.close()
+    SvfSveg.close()
+    SvfWveg.close()
+    Svfaveg.close()
+    SvfEaveg.close()
+    SvfSaveg.close()
+    SvfWaveg.close()
+    SvfNaveg.close()
+    Walls.close()
+    Dirwalls.close()
 
-# TODO - Modify this function when scheduling aws jobs to accept date and time
 def run_solweig(time_to_run):
     # Geting data from API
     r = requests.get('https://api.oikolab.com/weather',
@@ -109,16 +129,15 @@ def run_solweig(time_to_run):
     walls = Walls.read(1)
     dirwalls = Dirwalls.read(1)
 
-    # API andhardcoded  data
-    # time in UTC (MST: UTC - 7:00)
-    print(df)
-    print(time_to_run)
-
+    # Close files
+    close_files(DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls)
+    # Convert to no timezone to use as key
     datetime = time_to_run.replace(tzinfo=None)
-
+    # Convert to no timezone
     df.tz_localize(None)
     Ws = df.loc[datetime]['wind_speed (m/s)']
     Ta = df.loc[datetime]['temperature (degC)']
+    # expected to be a percentage between 0% and 100%
     RH = df.loc[datetime]['relative_humidity (0-1)'] * 100
     radG = df.loc[datetime]['surface_solar_radiation (W/m^2)']
     location = {'latitude': 33.29, 'longitude': -112.42}

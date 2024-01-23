@@ -32,37 +32,20 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
     from sunpos import altitude
     from sunpos import azimuth
     from sunpos import zenith
-    from sunpos import sun_distance
     from sunpos import maxalt
     from sunpos import timestamp
     from clearness_index import clearnessindex
     from diffusefraction import diffusefraction
     from solweig_cylindric_wedge_svfalfa import cylindric_wedge
     from solweig_daylen import daylen
-    from solweig_gvf_sunonsurface import sunonsurface_2018a,gvf_2018a
-    from solweig_k_rads import Kvikt_veg,Kup_veg_2015a,Kside_veg_v2019a
-    from solweig_l_rads import Lvikt_veg,Lside_veg_v2015a
+    from solweig_gvf_sunonsurface import gvf_2018a
+    from solweig_k_rads import Kup_veg_2015a,Kside_veg_v2019a
+    from solweig_l_rads import Lside_veg_v2015a
     from solweig_tswavedelay import TsWaveDelay_2015a
     from solweig_wallshadow import shadowingfunction_wallheight_23
-    #from umep_shadow_working import shadow_withveg_wall
-    #from umep_shadow import shadow_withveg_only
-    #from Solweig_2015a_metdata_noload import Solweig_2015a_metdata_noload
     import numpy as np
-    import math
     import datetime
-    import calendar
-    import pytz
-    import pysolar.solar as ps
-    #from __future__ import division
 
-    # albedo_b =None, absK=None, absL=None,ewall=None, Fside=None, Fup=None, Fcyl=None,, 
-    #, dectime, altmax=None, dirwalls=None, walls=None, cyl=None
-    # TgK=None, Tstart=None, alb_grid=None, emis_grid=None, TgK_wall=None, Tstart_wall=None,TmaxLST=None
-    #TmaxLST_wall=None, first=None, second=None, svfbuveg=None,firstdaytime, timeadd, timestepdec=None, Tgmap1=None, 
-    #Tgmap1E=None, Tgmap1S=None, Tgmap1W=None, Tgmap1N=None, CI=None, TgOut1, diffsh=None, ani=None
-    #radD=None, radI=None altitude, azimuth, zen, jday, 
-    
-    
 
     # Variable definitions:
     # dsm = digital surface model
@@ -143,23 +126,7 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
     # # metdata[0, 21] = radD
     # # metdata[0, 22] = radI
     # # metdata[0, 9] = Ws
-	
-    # # YYYY, altitude, azimuth, zen, jday, leafon, dectime, altmax = Solweig_2015a_metdata_noload(metadata,lat,lon,tzone)
-    
-    # # #psi = leafon * self.trans
-    # # #psi[leafon == 0] = 0.5
-	
-    # # P = -999.0
-	# # # %Creating vectors from meteorological input
-    # # DOY = metdata[:, 1]
-    # # hours = metdata[:, 2]
-    # # minu = metdata[:, 3]
-    # # Ta = metdata[:, 11]
-    # # RH = metdata[:, 10]
-    # # radG = metdata[:, 14]
-    # # radD = metdata[:, 21]
-    # # radI = metdata[:, 22]
-    # # P = metdata[:, 12]
+
     # # Ws = metdata[:, 9]
 	
     #some constants here :: change before running if need be 
@@ -176,18 +143,13 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
     #timeconstants
     timestepdec = 0
     timeadd = 0.
-    timeaddE = 0.
-    timeaddS = 0.
-    timeaddW = 0.
-    timeaddN = 0.
     firstdaytime = 1.
 	
     #constants for a standing person 
     Fside = 0.22 #change 
     Fup = 0.06
     Fcyl = 0.28
-    height = 1.1
-	
+
 	#building footprints from DSM and DEM
 	
     buildings = dsm - dem
@@ -196,8 +158,6 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
 	
 	
 	###########
-    sizex = dsm.shape[0]  # rows
-    sizey = dsm.shape[1]  # cols
     rows = dsm.shape[0]
     cols = dsm.shape[1]
 
@@ -218,27 +178,10 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
     # Bush separation
     bush = np.logical_not((vegdem2*vegdem))*vegdem
 
-	
-	# ###############
-    # vegdsm2= vegdsm * trunkratio
-	
-	# # amaxvalue
-    # vegmax = vegdsm.max()
-    # amaxvalue = dsm.max() - dsm.min()
-    # amaxvalue = np.maximum(amaxvalue, vegmax)
-
-    # # Elevation vegdsms if buildingDSM includes ground heights
-    # vegdem = vegdsm + dsm
-    # vegdem[vegdem == dsm] = 0
-    # vegdem2 = vegdsm2 + dsm       #modified to deal with the absence of trunk information
-    # vegdem2[vegdem2 == dsm] = 0  #modified to deal with the absence of trunk information
-	
-	# # Bush separation
-    # bush = np.logical_not((vegdem2*vegdem))*vegdem
-	
-    svfbuveg =  svf - (1. - svfveg) * (1. - psi) 
+    svfbuveg =  svf - (1. - svfveg) * (1. - psi)
 	
 	# %Initialization of maps
+    print('initializing maps', flush=True)
     Knight = np.zeros((rows, cols))
     Tgmap1 = np.zeros((rows, cols))
     Tgmap1E = np.zeros((rows, cols))
@@ -257,7 +200,6 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
     TmaxLST_wall = 15.
 	
 	# %Parameterisarion for Lup
-    #if not height:
     height = 1.1
 	
     diffsh = None #condiering isotropic sky
@@ -270,9 +212,8 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
     
     #############wall calculations################
     #walls = findwalls (dsm,3.0)
-    
+
     #dirwalls = filter1Goodwin_as_aspect_v3(walls,res,dsm)
-    
 
     # # # Core program start # # #
     # Instrument offset in degrees
@@ -292,6 +233,7 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
     esky = (1 - (1 + msteg) * np.exp(-((1.2 + 3.0 * msteg) ** 0.5))) + elvis  # -0.04 old error from Jonsson et al.2006
 
     if alt > 0: # # # # # # DAYTIME # # # # # #
+        print('daytime', flush=True)
         # Clearness Index on Earth's surface after Crawford and Dunchon (1999) with a correction
         #  factor for low sun elevations after Lindberg et al.(2008)
         I0, CI, Kt, I0et, CIuncorr = clearnessindex(zen, doy, Ta, RH , radG, location, P)
@@ -305,7 +247,7 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
              CI = 1
 
         radI, radD = diffusefraction(radG, alt, Kt, Ta, RH)
-        print('rad diffuse done')
+        print('rad diffuse done', flush=True)
         print(radI, radD)
         print(datetime.datetime.now())
 		
@@ -325,23 +267,23 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
         ##YYYY, altitude, azimuth, zen, jday, leafon, dectime, altmax = Solweig_2015a_metdata_noload(metdata,lat,lon,time) use when doy =221
         dectime= doy+hour / 24 + minu / (60*24.)
         altmax= maxalt(lat,doy,year) #80.15 # to be calculated 
-        print('rad dectime done')
+        print('rad dectime done', flush=True)
         print(datetime.datetime.now())
     
     #psi = leafon * self.trans
     #psi[leafon == 0] = 0.5
 	
 	# %Creating vectors from meteorological input
-        DOY = metdata[:, 1]
-        hours = metdata[:, 2]
-        minu = metdata[:, 3]
+    #     DOY = metdata[:, 1]
+    #     hours = metdata[:, 2]
+    #     minu = metdata[:, 3]
         Ta = metdata[:, 11]
         RH = metdata[:, 10]
         radG = metdata[:, 14]
         radD = metdata[:, 21]
         radI = metdata[:, 22]
-        P = metdata[:, 12]
-        Ws = metdata[:, 9]
+        # P = metdata[:, 12]
+        # Ws = metdata[:, 9]
 
         # Diffuse Radiation
         # Anisotropic Diffuse Radiation after Perez et al. 1993
@@ -411,7 +353,7 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
         print(datetime.datetime.now())
         # # For Tg output in POIs
         TgTemp = Tg * shadow + Ta
-        TgOut, timeadd, TgOut1 = TsWaveDelay_2015a(TgTemp, firstdaytime, timeadd, timestepdec, TgOut1) #timeadd only here v2021a
+        # TgOut, timeadd, TgOut1 = TsWaveDelay_2015a(TgTemp, firstdaytime, timeadd, timestepdec, TgOut1) #timeadd only here v2021a
 
         # Building height angle from svf
         F_sh = cylindric_wedge(zen, svfalfa, rows, cols)  # Fraction shadow on building walls based on sun alt and svf
@@ -432,9 +374,9 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
         print('k rad done')
         print(datetime.datetime.now())
 
-        firstdaytime = 0
-
     else:  # # # # # # # NIGHTTIME # # # # # # # #
+        print('nighttime', flush=True)
+
         CI=1 ##may change here
 
         Tgwall = 0
@@ -449,10 +391,9 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
         Ksouth = np.zeros((rows, cols))
         Knorth = np.zeros((rows, cols))
         KsideI = np.zeros((rows, cols))
-        KsideD = np.zeros((rows, cols))
+        # KsideD = np.zeros((rows, cols))
         F_sh = np.zeros((rows, cols))
         Tg = np.zeros((rows, cols))
-        shadow = np.zeros((rows, cols))
 
         # # # # Lup # # # #
         Lup = SBC * emis_grid * ((Knight + Ta + Tg + 273.15) ** 4)
@@ -464,20 +405,17 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
         LupW = Lup
         LupN = Lup
 
-        # # For Tg output in POIs
-        TgOut = Ta + Tg
-
-        I0 = 0
-        timeadd = 0
-        firstdaytime = 1
 
     # # # # Ldown # # # #
-    Ldown = (svf + svfveg - 1) * esky * SBC * ((Ta + 273.15) ** 4) + (2 - svfveg - svfaveg) * ewall * SBC *  ((Ta + 273.15) ** 4) + (svfaveg - svf) * ewall * SBC * ((Ta + 273.15 + Tgwall) ** 4) + (2 - svf - svfveg) * (1 - ewall) * esky * SBC * ((Ta + 273.15) ** 4)  # Jonsson et al.(2006)
+    # Ldown = (svf + svfveg - 1) * esky * SBC * ((Ta + 273.15) ** 4) + (2 - svfveg - svfaveg) * ewall * SBC *  ((Ta + 273.15) ** 4) + (svfaveg - svf) * ewall * SBC * ((Ta + 273.15 + Tgwall) ** 4) + (2 - svf - svfveg) * (1 - ewall) * esky * SBC * ((Ta + 273.15) ** 4)  # Jonsson et al.(2006)
     # Ldown = Ldown - 25 # Shown by Jonsson et al.(2006) and Duarte et al.(2006)
+    # In-place operations and avoiding unnecessary intermediates
+    Ldown = svf + svfveg
+    Ldown *= esky * SBC * ((Ta + 273.15) ** 4)
 
-    #if CI < 0.95:  # non - clear conditions
-    #    c = 1 - CI
-    #    Ldown = Ldown * (1 - c) + c * ((svf + svfveg - 1) * SBC * ((Ta + 273.15) ** 4) + (2 - svfveg - svfaveg) *ewall * SBC * ((Ta + 273.15) ** 4) + (svfaveg - svf) * ewall * SBC * ((Ta + 273.15 + Tgwall) ** 4) +(2 - svf - svfveg) * (1 - ewall) * SBC * ((Ta + 273.15) ** 4))  # NOT REALLY TESTED!!! BUT MORE CORRECT?
+    Ldown += (2 - svfveg - svfaveg) * ewall * SBC * ((Ta + 273.15) ** 4)
+    Ldown += (svfaveg - svf) * ewall * SBC * ((Ta + 273.15 + Tgwall) ** 4)
+    Ldown += (2 - svf - svfveg) * (1 - ewall) * esky * SBC * ((Ta + 273.15) ** 4)
 
     # # # # Lside # # # #
     Least, Lsouth, Lwest, Lnorth = Lside_veg_v2015a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg,
@@ -485,14 +423,15 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
                                                       esky, t, F_sh, CI, LupE, LupS, LupW, LupN)
 
     # # # # Calculation of radiant flux density and Tmrt # # # #
-    if cyl == 1 and ani == 1:  # Human body considered as a cylinder with Perez et al. (1993)
-        Sstr = absK * ((KsideI + KsideD) * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
-    elif cyl == 1 and ani == 0: # Human body considered as a cylinder with isotropic all-sky diffuse
-	    Sstr = absK * (KsideI * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
-    else: # Human body considered as a standing cube
-	    Sstr = absK * ((Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) +absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
+    # if cyl == 1 and ani == 1:  # Human body considered as a cylinder with Perez et al. (1993)
+    #     Sstr = absK * ((KsideI + KsideD) * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
+    # elif cyl == 1 and ani == 0: # Human body considered as a cylinder with isotropic all-sky diffuse
+	#     Sstr = absK * (KsideI * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
+    # else: # Human body considered as a standing cube
+	#     Sstr = absK * ((Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) +absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
     print('calculating mrt')
     print(datetime.datetime.now())
+    Sstr = absK * (KsideI * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
 
     Tmrt = np.sqrt(np.sqrt((Sstr / (absL * SBC)))) - 273.2
     
@@ -507,9 +446,7 @@ def Solweig_2021a_calc(dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svf
     print(datetime.datetime.now())
     
 
-    return {'Tmrt': Tmrt,'Kdown': Kdown, 'Kup':Kup,'Ldown': Ldown,'Lup': Lup,'shadow':shadow,
-	'Keast':Keast, 'Ksouth':Ksouth, 'Kwest':Kwest, 'Knorth':Knorth, 
-	'Least':Least,'Lsouth':Lsouth, 'Lwest':Lwest, 'Lnorth':Lnorth}
+    return {'Tmrt': Tmrt }
 	
 	#'shade':shade'Tg': Tg, ea, esky, I0, CI, shadow, firstdaytime, timestepdec, \
     #timeadd, Tgmap1, Tgmap1E, Tgmap1S, Tgmap1W, Tgmap1N, Keast, Ksouth, Kwest, Knorth, Least, \
