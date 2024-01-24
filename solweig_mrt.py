@@ -148,11 +148,6 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     # %Initialization of maps
     print('initializing maps', flush=True)
     Knight = np.zeros((rows, cols))
-    Tgmap1 = np.zeros((rows, cols))
-    Tgmap1E = np.zeros((rows, cols))
-    Tgmap1S = np.zeros((rows, cols))
-    Tgmap1W = np.zeros((rows, cols))
-    Tgmap1N = np.zeros((rows, cols))
 
     TgK = Knight + 0.37
     Tstart = Knight - 3.41
@@ -234,7 +229,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         print(datetime.datetime.now())
 
         # # # Surface temperature parameterisation during daytime # # # #
-        # new using max sun alt.instead of  dfm
+        # new using max sun alt.instead of
         Tgamp = (TgK * altmax - Tstart) + Tstart
         Tgampwall = (TgK_wall * altmax - Tstart_wall) + Tstart_wall
         Tg = Tgamp * np.sin((((dectime - np.floor(dectime)) - SNUP / 24) / (
@@ -268,15 +263,16 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         print(datetime.datetime.now())
         # # # # Lup, daytime # # # #
         # Surface temperature wave delay - new as from 2014a
-        Lup, _, Tgmap1 = TsWaveDelay_2015a(gvfLup, firstdaytime, timeadd, timestepdec, Tgmap1)
+
+        Lup = TsWaveDelay_2015a(gvfLup, firstdaytime, timeadd, timestepdec)
         del gvfLup
-        LupE, _, Tgmap1E = TsWaveDelay_2015a(gvfLupE, firstdaytime, timeadd, timestepdec, Tgmap1E)
+        LupE = TsWaveDelay_2015a(gvfLupE, firstdaytime, timeadd, timestepdec)
         del gvfLupE
-        LupS, _, Tgmap1S = TsWaveDelay_2015a(gvfLupS, firstdaytime, timeadd, timestepdec, Tgmap1S)
+        LupS = TsWaveDelay_2015a(gvfLupS, firstdaytime, timeadd, timestepdec)
         del gvfLupS
-        LupW, _, Tgmap1W = TsWaveDelay_2015a(gvfLupW, firstdaytime, timeadd, timestepdec, Tgmap1W)
+        LupW = TsWaveDelay_2015a(gvfLupW, firstdaytime, timeadd, timestepdec)
         del gvfLupW
-        LupN, _, Tgmap1N = TsWaveDelay_2015a(gvfLupN, firstdaytime, timeadd, timestepdec, Tgmap1N)
+        LupN = TsWaveDelay_2015a(gvfLupN, firstdaytime, timeadd, timestepdec)
         del gvfLupN
         print('l rad done', flush=True)
         print(datetime.datetime.now())
@@ -373,6 +369,3 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
 
     return {'Tmrt': Tmrt}
 
-    # 'shade':shade'Tg': Tg, ea, esky, I0, CI, shadow, firstdaytime, timestepdec, \
-    # timeadd, Tgmap1, Tgmap1E, Tgmap1S, Tgmap1W, Tgmap1N, Keast, Ksouth, Kwest, Knorth, Least, \
-# Lsouth, Lwest, Lnorth, KsideI, TgOut1, TgOut, radI, radD}
