@@ -11,6 +11,7 @@
 
 import numpy as np
 
+
 def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second, aspect, walls, Tg, Tgwall, Ta,
                        emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover):
     # This version of sunonsurfce goes with SOLWEIG 2015a. It also simulates
@@ -37,12 +38,6 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
     Lwall = SBC * ewall * (Tgwall + Ta + 273.15) ** 4 - SBC * ewall * (Ta + 273.15) ** 4  # +Ta
     albshadow = alb_grid * shadow
     alb = alb_grid
-    # sh(sh<=0.1)=0;
-    # sh=sh-(1-vegsh)*(1-psi);
-    # shadow=sh-(1-vegsh)*(1-psi);
-    # dx=0;
-    # dy=0;
-    # ds=0; ##ok<NASGU>
 
     tempsh = np.zeros((sizex, sizey))
     tempbu = np.zeros((sizex, sizey))
@@ -55,7 +50,6 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
     if first < 1:
         first = 1
     second = np.round(second * res)
-    # tempTgsh=tempsh;
     weightsumLupsh = np.zeros((sizex, sizey))
     weightsumLwall = np.zeros((sizex, sizey))
     weightsumalbsh = np.zeros((sizex, sizey))
@@ -77,17 +71,15 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
     signsinazimuth = np.sign(sinazimuth)
     signcosazimuth = np.sign(cosazimuth)
 
-    ## The Shadow casting algoritm
+    # The Shadow casting algorithm
     for n in np.arange(0, second):
         if (pibyfour <= azimuth and azimuth < threetimespibyfour) or (
                 fivetimespibyfour <= azimuth and azimuth < seventimespibyfour):
             dy = signsinazimuth * index
             dx = -1 * signcosazimuth * np.abs(np.round(index / tanazimuth))
-            # ds = dssin
         else:
             dy = signsinazimuth * abs(round(index * tanazimuth))
             dx = -1 * signcosazimuth * index
-            # ds = dscos
 
         absdx = np.abs(dx)
         absdy = np.abs(dy)
@@ -205,13 +197,14 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
     gvf = (gvf1 * 0.5 + gvf2 * 0.4) / 0.9
     gvfLup = (gvfLup1 * 0.5 + gvfLup2 * 0.4) / 0.9
     gvfLup = gvfLup + ((SBC * emis_grid * (Tg * shadow + Ta + 273.15) ** 4) - SBC * emis_grid * (Ta + 273.15) ** 4) * (
-                buildings * -1 + 1)  # +Ta
+            buildings * -1 + 1)  # +Ta
     gvfalb = (gvfalb1 * 0.5 + gvfalb2 * 0.4) / 0.9
     gvfalb = gvfalb + alb_grid * (buildings * -1 + 1) * shadow
     gvfalbnosh = (gvfalbnosh1 * 0.5 + gvfalbnosh2 * 0.4) / 0.9
     gvfalbnosh = gvfalbnosh * buildings + alb_grid * (buildings * -1 + 1)
 
     return gvf, gvfLup, gvfalb, gvfalbnosh, gvf2
+
 
 def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall,
               alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover):
@@ -246,51 +239,51 @@ def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, T
                                                                     emis_grid, ewall, alb_grid, SBC, albedo_b, Twater,
                                                                     lc_grid, landcover)
 
-        gvfLup = gvfLup + gvfLupi
-        gvfalb = gvfalb + gvfalbi
-        gvfalbnosh = gvfalbnosh + gvfalbnoshi
-        gvfSum = gvfSum + gvf2
+        gvfLup += gvfLupi
+        gvfalb += gvfalbi
+        gvfalbnosh += gvfalbnoshi
+        gvfSum += gvfSum + gvf2
 
         if (azimuthA[j] >= 0) and (azimuthA[j] < 180):
-            gvfLupE = gvfLupE + gvfLupi
-            gvfalbE = gvfalbE + gvfalbi
-            gvfalbnoshE = gvfalbnoshE + gvfalbnoshi
+            gvfLupE += gvfLupi
+            gvfalbE += gvfalbi
+            gvfalbnoshE += gvfalbnoshi
 
         if (azimuthA[j] >= 90) and (azimuthA[j] < 270):
-            gvfLupS = gvfLupS + gvfLupi
-            gvfalbS = gvfalbS + gvfalbi
-            gvfalbnoshS = gvfalbnoshS + gvfalbnoshi
+            gvfLupS += gvfLupi
+            gvfalbS += gvfalbi
+            gvfalbnoshS += gvfalbnoshi
 
         if (azimuthA[j] >= 180) and (azimuthA[j] < 360):
-            gvfLupW = gvfLupW + gvfLupi
-            gvfalbW = gvfalbW + gvfalbi
-            gvfalbnoshW = gvfalbnoshW + gvfalbnoshi
+            gvfLupW += gvfLupi
+            gvfalbW += gvfalbi
+            gvfalbnoshW += gvfalbnoshi
 
         if (azimuthA[j] >= 270) or (azimuthA[j] < 90):
-            gvfLupN = gvfLupN + gvfLupi
-            gvfalbN = gvfalbN + gvfalbi
-            gvfalbnoshN = gvfalbnoshN + gvfalbnoshi
+            gvfLupN += gvfLupi
+            gvfalbN += gvfalbi
+            gvfalbnoshN += gvfalbnoshi
 
     gvfLup = gvfLup / azimuthA.__len__() + SBC * emis_grid * (Ta + 273.15) ** 4
-    gvfalb = gvfalb / azimuthA.__len__()
-    gvfalbnosh = gvfalbnosh / azimuthA.__len__()
+    gvfalb /= azimuthA.__len__()
+    gvfalbnosh /= azimuthA.__len__()
 
     gvfLupE = gvfLupE / (azimuthA.__len__() / 2) + SBC * emis_grid * (Ta + 273.15) ** 4
     gvfLupS = gvfLupS / (azimuthA.__len__() / 2) + SBC * emis_grid * (Ta + 273.15) ** 4
     gvfLupW = gvfLupW / (azimuthA.__len__() / 2) + SBC * emis_grid * (Ta + 273.15) ** 4
     gvfLupN = gvfLupN / (azimuthA.__len__() / 2) + SBC * emis_grid * (Ta + 273.15) ** 4
 
-    gvfalbE = gvfalbE / (azimuthA.__len__() / 2)
-    gvfalbS = gvfalbS / (azimuthA.__len__() / 2)
-    gvfalbW = gvfalbW / (azimuthA.__len__() / 2)
-    gvfalbN = gvfalbN / (azimuthA.__len__() / 2)
+    gvfalbE /= (azimuthA.__len__() / 2)
+    gvfalbS /= (azimuthA.__len__() / 2)
+    gvfalbW /= (azimuthA.__len__() / 2)
+    gvfalbN /= (azimuthA.__len__() / 2)
 
-    gvfalbnoshE = gvfalbnoshE / (azimuthA.__len__() / 2)
-    gvfalbnoshS = gvfalbnoshS / (azimuthA.__len__() / 2)
-    gvfalbnoshW = gvfalbnoshW / (azimuthA.__len__() / 2)
-    gvfalbnoshN = gvfalbnoshN / (azimuthA.__len__() / 2)
+    gvfalbnoshE /= (azimuthA.__len__() / 2)
+    gvfalbnoshS /= (azimuthA.__len__() / 2)
+    gvfalbnoshW /= (azimuthA.__len__() / 2)
+    gvfalbnoshN /= (azimuthA.__len__() / 2)
 
     gvfNorm = gvfSum / (azimuthA.__len__())
     gvfNorm[buildings == 0] = 1
-    
+
     return gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE, gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, gvfalbnoshW, gvfLupN, gvfalbN, gvfalbnoshN, gvfSum, gvfNorm
