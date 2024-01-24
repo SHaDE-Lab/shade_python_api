@@ -30,14 +30,12 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
 
     # loop parameters
     index = 0
-    f = buildings
     Lup = SBC * emis_grid * (Tg * shadow + Ta + 273.15) ** 4 - SBC * emis_grid * (Ta + 273.15) ** 4  # +Ta
     if landcover == 1:
         Tg[lc_grid == 3] = Twater - Ta  # Setting water temperature
 
     Lwall = SBC * ewall * (Tgwall + Ta + 273.15) ** 4 - SBC * ewall * (Ta + 273.15) ** 4  # +Ta
     albshadow = alb_grid * shadow
-    alb = alb_grid
 
     weightsumsh = np.zeros((sizex, sizey))
     weightsumwall = np.zeros((sizex, sizey))
@@ -46,9 +44,7 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
         first = 1
     second = np.round(second * res)
     weightsumLupsh = np.zeros((sizex, sizey))
-    weightsumLwall = np.zeros((sizex, sizey))
     weightsumalbsh = np.zeros((sizex, sizey))
-    weightsumalbwall = np.zeros((sizex, sizey))
     weightsumalbnosh = np.zeros((sizex, sizey))
     weightsumalbwallnosh = np.zeros((sizex, sizey))
 
@@ -98,39 +94,38 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
         tempalbsh = np.zeros_like(albshadow)
         tempalbsh[int(xp1):int(xp2), int(yp1):int(yp2)] = albshadow[int(xc1):int(xc2),
                                                           int(yc1):int(yc2)]  # moving Albedo/shadow
-        tempalbnosh = np.zeros_like(alb)
-        tempalbnosh[int(xp1):int(xp2), int(yp1):int(yp2)] = alb[int(xc1):int(xc2), int(yc1):int(yc2)]  # moving Albedo
-        f = np.min([f, tempbu], axis=0)  # utsmetning av buildings
+        tempalbnosh = np.zeros_like(alb_grid)
+        tempalbnosh[int(xp1):int(xp2), int(yp1):int(yp2)] = alb_grid[int(xc1):int(xc2), int(yc1):int(yc2)]  # moving Albedo
 
-        weightsumsh += tempsh * f
+        tempbu = np.min([buildings, tempbu], axis=0)  # utsmetning av buildings
 
-        weightsumLupsh += tempLupsh * f
+        weightsumsh += tempsh * tempbu
 
-        weightsumalbsh += tempalbsh * f
+        weightsumLupsh += tempLupsh * tempbu
 
-        weightsumalbnosh += tempalbnosh * f
+        weightsumalbsh += tempalbsh * tempbu
+
+        weightsumalbnosh += tempalbnosh * tempbu
 
         tempwallsun = np.zeros_like(sunwall)
         tempwallsun[int(xp1):int(xp2), int(yp1):int(yp2)] = sunwall[int(xc1):int(xc2),
                                                             int(yc1):int(yc2)]  # moving buildingwall insun image
-        tempb = tempwallsun * f
-        tempbwall = f * -1 + 1
+        tempb = tempwallsun * tempbu
+        tempbwall = tempbu * -1 + 1
         tempbub = (tempb > 0) * 1
         tempbubwall = (tempbwall > 0) * 1
-        weightsumLwall += tempbub * Lwall
-        weightsumalbwall += tempbub * albedo_b
         weightsumwall += tempbub
-        weightsumalbwallnosh += weightsumalbwallnosh + tempbubwall * albedo_b
+        weightsumalbwallnosh += tempbubwall * albedo_b
 
         ind = 1
         if (n + 1) <= first:
             weightsumwall_first = weightsumwall / ind
             weightsumsh_first = weightsumsh / ind
             wallsuninfluence_first = weightsumwall_first > 0
-            weightsumLwall_first = weightsumLwall / ind  # *Lwall
+            weightsumLwall_first = weightsumwall / ind * Lwall
             weightsumLupsh_first = weightsumLupsh / ind
 
-            weightsumalbwall_first = weightsumalbwall / ind  # *albedo_b
+            weightsumalbwall_first = weightsumwall / ind  * albedo_b
             weightsumalbsh_first = weightsumalbsh / ind
             weightsumalbwallnosh_first = weightsumalbwallnosh / ind  # *albedo_b
             weightsumalbnosh_first = weightsumalbnosh / ind
@@ -164,15 +159,13 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
     # gvf from shadow and Lup
     gvfLup1 = ((weightsumLwall_first + weightsumLupsh_first) / (first + 1)) * wallsuninfluence_first + \
               (weightsumLupsh_first) / (first) * (wallsuninfluence_first * -1 + 1)
-    weightsumLwall[keep == 1] = 0
-    gvfLup2 = ((weightsumLwall + weightsumLupsh) / (second + 1)) * wallsuninfluence_second + \
+    gvfLup2 = ((weightsumwall * Lwall + weightsumLupsh) / (second + 1)) * wallsuninfluence_second + \
               (weightsumLupsh) / (second) * (wallsuninfluence_second * -1 + 1)
 
     # gvf from shadow and albedo
     gvfalb1 = ((weightsumalbwall_first + weightsumalbsh_first) / (first + 1)) * wallsuninfluence_first + \
               (weightsumalbsh_first) / (first) * (wallsuninfluence_first * -1 + 1)
-    weightsumalbwall[keep == 1] = 0
-    gvfalb2 = ((weightsumalbwall + weightsumalbsh) / (second + 1)) * wallsuninfluence_second + \
+    gvfalb2 = ((weightsumwall * albedo_b + weightsumalbsh) / (second + 1)) * wallsuninfluence_second + \
               (weightsumalbsh) / (second) * (wallsuninfluence_second * -1 + 1)
 
     # gvf from albedo only
