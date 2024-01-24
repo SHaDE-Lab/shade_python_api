@@ -159,15 +159,7 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
     # removing walls in self shadowing
     keep = (weightsumwall == second) - facesh
     keep[keep == -1] = 0
-
-    # gvf from shadow only
-    gvf1 = ((weightsumwall_first + weightsumsh_first) / (first + 1)) * wallsuninfluence_first + \
-           (weightsumsh_first) / (first) * (wallsuninfluence_first * -1 + 1)
     weightsumwall[keep == 1] = 0
-    gvf2 = ((weightsumwall + weightsumsh) / (second + 1)) * wallsuninfluence_second + \
-           (weightsumsh) / (second) * (wallsuninfluence_second * -1 + 1)
-
-    gvf2[gvf2 > 1.] = 1.
 
     # gvf from shadow and Lup
     gvfLup1 = ((weightsumLwall_first + weightsumLupsh_first) / (first + 1)) * wallsuninfluence_first + \
@@ -198,7 +190,7 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
     gvfalbnosh = (gvfalbnosh1 * 0.5 + gvfalbnosh2 * 0.4) / 0.9
     gvfalbnosh *= buildings + alb_grid * (buildings * -1 + 1)
 
-    return gvfLup, gvfalb, gvfalbnosh, gvf2
+    return gvfLup, gvfalb, gvfalbnosh
 
 
 def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall,
@@ -218,19 +210,17 @@ def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, T
     gvfalbnoshS = np.zeros((rows, cols))
     gvfalbnoshW = np.zeros((rows, cols))
     gvfalbnoshN = np.zeros((rows, cols))
-    gvfSum = np.zeros((rows, cols))
 
     #  sunwall=wallinsun_2015a(buildings,azimuth(i),shadow,psi(i),dirwalls,walls);
     sunwall = (wallsun / walls * buildings) == 1  # new as from 2015a
 
     for j in np.arange(0, azimuthA.__len__()):
-        gvfLupi, gvfalbi, gvfalbnoshi, gvf2 = sunonsurface_2018a(azimuthA[j], res, buildings, shadow, sunwall,
+        gvfLupi, gvfalbi, gvfalbnoshi = sunonsurface_2018a(azimuthA[j], res, buildings, shadow, sunwall,
                                                                     first,
                                                                     second, dirwalls * np.pi / 180, walls, Tg, Tgwall,
                                                                     Ta,
                                                                     emis_grid, ewall, alb_grid, SBC, albedo_b, Twater,
                                                                     lc_grid, landcover)
-        gvfSum += gvf2
         if (azimuthA[j] >= 0) and (azimuthA[j] < 180):
             gvfLupE += gvfLupi
             gvfalbE += gvfalbi
@@ -281,7 +271,4 @@ def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, T
     gvfalbnoshW /= (azimuthA.__len__() / 2)
     gvfalbnoshN /= (azimuthA.__len__() / 2)
 
-    gvfNorm = gvfSum / (azimuthA.__len__())
-    gvfNorm[buildings == 0] = 1
-
-    return gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE, gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, gvfalbnoshW, gvfLupN, gvfalbN, gvfalbnoshN, gvfSum, gvfNorm
+    return gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE, gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, gvfalbnoshW, gvfLupN, gvfalbN, gvfalbnoshN

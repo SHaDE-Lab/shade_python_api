@@ -234,11 +234,13 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         Tgamp = (TgK * altmax - Tstart) + Tstart
         del TgK
         Tgampwall = (TgK_wall * altmax - Tstart_wall) + Tstart_wall
+        del TgK_wall
         Tg = Tgamp * np.sin((((dectime - np.floor(dectime)) - SNUP / 24) / (
                 TmaxLST / 24 - SNUP / 24)) * np.pi / 2) + Tstart  # 2015 a, based on max sun altitude
+        del Tgamp, Tstart
         Tgwall = Tgampwall * np.sin((((dectime - np.floor(dectime)) - SNUP / 24) / (
                 TmaxLST_wall / 24 - SNUP / 24)) * np.pi / 2) + Tstart_wall  # 2015a, based on max sun altitude
-
+        del Tgampwall, Tstart_wall, TmaxLST_wall, SNUP
         if Tgwall < 0:  # temporary for removing low Tg during morning 20130205
             # Tg = 0
             Tgwall = 0
@@ -256,12 +258,13 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         # # # # Ground View Factors # # # #
         print('gvf starting', flush=True)
         gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE, gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, \
-            gvfalbnoshW, gvfLupN, gvfalbN, gvfalbnoshN, gvfSum, gvfNorm = gvf_2018a(wallsun, walls, buildings, res,
+            gvfalbnoshW, gvfLupN, gvfalbN, gvfalbnoshN = gvf_2018a(wallsun, walls, buildings, res,
                                                                                     shadow, first,
                                                                                     second, dirwalls, Tg, Tgwall, Ta,
                                                                                     emis_grid, ewall, alb_grid, SBC,
                                                                                     albedo_b, rows, cols,
                                                                                     Twater, lc_grid, landcover)
+        del emis_grid, alb_grid
         print('gvf done', flush=True)
         print(datetime.datetime.now())
         # # # # Lup, daytime # # # #
@@ -284,22 +287,24 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
 
         # Building height angle from svf
         F_sh = cylindric_wedge(zen, svfalfa, rows, cols)  # Fraction shadow on building walls based on sun alt and svf
+        del svfalfa, zen
         F_sh[np.isnan(F_sh)] = 0.5
 
         print('k rad starting', flush=True)
         # # # # # # # Calculation of shortwave daytime radiative fluxes # # # # # # #
         Kdown = radI * shadow * np.sin(alt * (np.pi / 180)) + dRad + albedo_b * (1 - svfbuveg) * (
                 radG * (1 - F_sh) + radD * F_sh)  # *sin(altitude(i) * (pi / 180))
-
+        del dRad
         Kup, KupE, KupS, KupW, KupN = Kup_veg_2015a(radI, radD, radG, alt, svfbuveg, albedo_b, F_sh, gvfalb,
                                                     gvfalbE, gvfalbS, gvfalbW, gvfalbN, gvfalbnosh, gvfalbnoshE,
                                                     gvfalbnoshS, gvfalbnoshW, gvfalbnoshN)
-
+        del svfbuveg, gvfalbE, gvfalbS, gvfalbW, gvfalbN, gvfalbnoshE, gvfalbnoshS, gvfalbnoshW, gvfalbnoshN
         Keast, Ksouth, Kwest, Knorth, KsideI, KsideD = Kside_veg_v2019a(radI, radD, radG, shadow, svfS, svfW, svfN,
                                                                         svfE,
                                                                         svfEveg, svfSveg, svfWveg, svfNveg, azmt, alt,
                                                                         psi, t, albedo_b, F_sh, KupE, KupS, KupW,
                                                                         KupN, cyl, lv, ani, diffsh, rows, cols)
+        del radD, KupE, KupS, KupW, KupN,shadow, albedo_b, diffsh, rows, cols, lv
         print('k rad done', flush=True)
         print(datetime.datetime.now())
 
@@ -316,8 +321,10 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
 
         # # # # Lup # # # #
         Lup = SBC * emis_grid * ((Ta + 273.15) ** 4)
+        del emis_grid
         if landcover == 1:
             Lup[lc_grid == 3] = SBC * 0.98 * (Twater + 273.15) ** 4  # nocturnal Water temp
+        del lc_grid
 
     # # # # Ldown # # # #
     # Ldown = (svf + svfveg - 1) * esky * SBC * ((Ta + 273.15) ** 4) + (2 - svfveg - svfaveg) * ewall * SBC *  ((Ta + 273.15) ** 4) + (svfaveg - svf) * ewall * SBC * ((Ta + 273.15 + Tgwall) ** 4) + (2 - svf - svfveg) * (1 - ewall) * esky * SBC * ((Ta + 273.15) ** 4)  # Jonsson et al.(2006)
