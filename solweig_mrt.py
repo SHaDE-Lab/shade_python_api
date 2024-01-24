@@ -219,10 +219,11 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         # Anisotropic Diffuse Radiation after Perez et al. 1993
         dRad = radD * svfbuveg
         lv = 0
-
+        print('on the fly shadow starting', flush=True)
         # Shadow  images
         vegsh, sh, wallsun = shadowingfunction_wallheight_23(dsm, vegdem, vegdem2, azmt, alt, res, amaxvalue, bush,
                                                              walls, (dirwalls * np.pi / 180.))
+        del dsm, vegdem, vegdem2, bush
         shadow = sh - (1 - vegsh) * (1 - psi)
 
         print('on the fly shadow done', flush=True)
@@ -231,6 +232,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         # # # Surface temperature parameterisation during daytime # # # #
         # new using max sun alt.instead of
         Tgamp = (TgK * altmax - Tstart) + Tstart
+        del TgK
         Tgampwall = (TgK_wall * altmax - Tstart_wall) + Tstart_wall
         Tg = Tgamp * np.sin((((dectime - np.floor(dectime)) - SNUP / 24) / (
                 TmaxLST / 24 - SNUP / 24)) * np.pi / 2) + Tstart  # 2015 a, based on max sun altitude
@@ -252,6 +254,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         if landcover == 1:
             Tg[Tg < 0] = 0  # temporary for removing low Tg during morning 20130205
         # # # # Ground View Factors # # # #
+        print('gvf starting', flush=True)
         gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE, gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, \
             gvfalbnoshW, gvfLupN, gvfalbN, gvfalbnoshN, gvfSum, gvfNorm = gvf_2018a(wallsun, walls, buildings, res,
                                                                                     shadow, first,
@@ -263,7 +266,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         print(datetime.datetime.now())
         # # # # Lup, daytime # # # #
         # Surface temperature wave delay - new as from 2014a
-
+        print('l rad starting', flush=True)
         Lup = TsWaveDelay_2015a(gvfLup, firstdaytime, timeadd, timestepdec)
         del gvfLup
         LupE = TsWaveDelay_2015a(gvfLupE, firstdaytime, timeadd, timestepdec)
@@ -283,6 +286,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         F_sh = cylindric_wedge(zen, svfalfa, rows, cols)  # Fraction shadow on building walls based on sun alt and svf
         F_sh[np.isnan(F_sh)] = 0.5
 
+        print('k rad starting', flush=True)
         # # # # # # # Calculation of shortwave daytime radiative fluxes # # # # # # #
         Kdown = radI * shadow * np.sin(alt * (np.pi / 180)) + dRad + albedo_b * (1 - svfbuveg) * (
                 radG * (1 - F_sh) + radD * F_sh)  # *sin(altitude(i) * (pi / 180))
@@ -348,6 +352,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     # else: # Human body considered as a standing cube
     #     Sstr = absK * ((Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) +absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
     print('calculating mrt', flush=True)
+
     print(datetime.datetime.now())
     if alt > 0:
         Sstr = absK * (KsideI * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (
@@ -357,13 +362,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
                 Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside))
     Tmrt = np.sqrt(np.sqrt((Sstr / (absL * SBC)))) - 273.2
 
-    # if write==True:
-    # mrt = rio.open(out, 'w', driver = 'GTiff', height = a.shape[0], width = a.shape[1], count = 1,
-    #					  crs= DSM.crs,transform=DSM.transform,dtype=dirwalls.dtype)
-    #
-    # vf.write(dirwalls,1)
 
-    # vf.close
     print('mrt done', flush=True)
     print(datetime.datetime.now())
 

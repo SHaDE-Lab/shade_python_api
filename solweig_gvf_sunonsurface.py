@@ -115,8 +115,8 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
                                                             int(yc1):int(yc2)]  # moving buildingwall insun image
         tempb = tempwallsun * f
         tempbwall = f * -1 + 1
-        tempbub = ((tempb + tempbub) > 0) * 1
-        tempbubwall = ((tempbwall + tempbubwall) > 0) * 1
+        tempbub = (tempb > 0) * 1
+        tempbubwall = (tempbwall > 0) * 1
         weightsumLwall += tempbub * Lwall
         weightsumalbwall += tempbub * albedo_b
         weightsumwall += tempbub
@@ -127,7 +127,7 @@ def sunonsurface_2018a(azimuthA, res, buildings, shadow, sunwall, first, second,
             weightsumwall_first = weightsumwall / ind
             weightsumsh_first = weightsumsh / ind
             wallsuninfluence_first = weightsumwall_first > 0
-            weightsumLwall_first = (weightsumLwall) / ind  # *Lwall
+            weightsumLwall_first = weightsumLwall / ind  # *Lwall
             weightsumLupsh_first = weightsumLupsh / ind
 
             weightsumalbwall_first = weightsumalbwall / ind  # *albedo_b
