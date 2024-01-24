@@ -6,7 +6,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 3500m
+          memory: 3800m
   flask-app:
     build: ./server
     ports:
@@ -16,7 +16,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 400m
+          memory: 200m
   
 volumes:
   data-volume:

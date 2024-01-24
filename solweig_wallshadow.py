@@ -204,7 +204,7 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
     OUTPUT:
     sh=ground and roof shadow
     wallsh = height of wall that is in shadow
-    wallsun = hieght of wall that is in sun
+    wallsun = height of wall that is in sun
     original Matlab code:
     Fredrik Lindberg 2013-08-14
     fredrikl@gvc.gu.se
@@ -234,17 +234,25 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
     dx = 0
     dy = 0
     dz = 0
-    temp = np.zeros((sizex, sizey))
-    tempvegdem = np.zeros((sizex, sizey))
-    tempvegdem2 = np.zeros((sizex, sizey))
-    templastfabovea = np.zeros((sizex, sizey))
-    templastgabovea = np.zeros((sizex, sizey))
-    bushplant = bush > 1
-    sh = np.zeros((sizex, sizey))  # shadows from buildings
-    vbshvegsh = np.copy(sh)  # vegetation blocking buildings
-    vegsh = np.add(np.zeros((sizex, sizey)), bushplant, dtype=float)  # vegetation shadow
+    # temp = np.zeros((sizex, sizey))
+    # tempvegdem = np.zeros((sizex, sizey))
+    # tempvegdem2 = np.zeros((sizex, sizey))
+    # templastfabovea = np.zeros((sizex, sizey))
+    # templastgabovea = np.zeros((sizex, sizey))
+    # bushplant = bush > 1
+    # sh = np.zeros((sizex, sizey))  # shadows from buildings
+    # vbshvegsh = np.copy(sh)  # vegetation blocking buildings
+    # vegsh = np.add(np.zeros((sizex, sizey)), bushplant, dtype=float)  # vegetation shadow
+    # f = np.copy(a)
+    # shvoveg = np.copy(vegdem)  # for vegetation shadowvolume
+    # wallbol = (walls > 0).astype(float)
+
+    # Reuse existing arrays
+    sh = np.zeros((sizex, sizey))
+    vbshvegsh = np.copy(sh)
+    vegsh = np.add(np.zeros((sizex, sizey)), bush > 1, dtype=float)
     f = np.copy(a)
-    shvoveg = np.copy(vegdem)  # for vegetation shadowvolume
+    shvoveg = np.copy(vegdem)
     wallbol = (walls > 0).astype(float)
 
     # other loop parameters
@@ -280,11 +288,6 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
 
         # note: dx and dy represent absolute values while ds is an incremental value
         dz = (ds * index) * tanaltitudebyscale
-        tempvegdem[:, :] = 0
-        tempvegdem2[:, :] = 0
-        temp[:, :] = 0
-        templastfabovea[:, :] = 0.
-        templastgabovea[:, :] = 0.
         absdx = np.abs(dx)
         absdy = np.abs(dy)
         xc1 = int((dx + absdx) / 2)
@@ -296,20 +299,19 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
         yp1 = -int((dy - absdy) / 2)
         yp2 = int(sizey - (dy + absdy) / 2)
 
-        tempvegdem[xp1:xp2, yp1:yp2] = vegdem[xc1:xc2, yc1:yc2] - dz
-        tempvegdem2[xp1:xp2, yp1:yp2] = vegdem2[xc1:xc2, yc1:yc2] - dz
-        temp[xp1:xp2, yp1:yp2] = a[xc1:xc2, yc1:yc2] - dz
+        vegdem[xp1:xp2, yp1:yp2] -= dz
+        vegdem2[xp1:xp2, yp1:yp2] -= dz
+        a[xc1:xc2, yc1:yc2] -= dz
 
-        f = np.fmax(f, temp)  # Moving building shadow
-        shvoveg = np.fmax(shvoveg, tempvegdem)  # moving vegetation shadow volume
+        f = np.fmax(f, a - dz)  # Moving building shadow
+        shvoveg = np.fmax(shvoveg, vegdem - dz)  # moving vegetation shadow volume
         sh[f > a] = 1
         sh[f <= a] = 0
-        fabovea = (tempvegdem > a).astype(int)  # vegdem above DEM
-        gabovea = (tempvegdem2 > a).astype(int)  # vegdem2 above DEM
+        fabovea = (vegdem > a - dz).astype(int)
+        gabovea = (vegdem2 > a - dz).astype(int)
 
-        # new pergola condition
-        templastfabovea[xp1:xp2, yp1:yp2] = vegdem[xc1:xc2, yc1:yc2] - dzprev
-        templastgabovea[xp1:xp2, yp1:yp2] = vegdem2[xc1:xc2, yc1:yc2] - dzprev
+        templastfabovea = vegdem - dzprev
+        templastgabovea = vegdem2 - dzprev
         lastfabovea = templastfabovea > a
         lastgabovea = templastgabovea > a
         dzprev = dz
@@ -320,8 +322,7 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
 
         vegsh = np.fmax(vegsh, vegsh2)
         vegsh[vegsh * sh > 0] = 0
-        vbshvegsh = np.copy(vegsh) + vbshvegsh  # removing shadows 'behind' buildings
-
+        vbshvegsh += vegsh
         index += 1
 
     # Removing walls in shadow due to selfshadowing
