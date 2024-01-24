@@ -46,6 +46,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     from solweig_wallshadow import shadowingfunction_wallheight_23
     import numpy as np
     import datetime
+    import gc
 
     # Variable definitions:
     # dsm = digital surface model
@@ -255,6 +256,8 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         Tgwall = Tgwall * CI_Tg
         if landcover == 1:
             Tg[Tg < 0] = 0  # temporary for removing low Tg during morning 20130205
+        del radI0
+        gc.collect()
         # # # # Ground View Factors # # # #
         print('gvf starting', flush=True)
         gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE, gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, \
