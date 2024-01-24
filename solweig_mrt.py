@@ -352,7 +352,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
                                                         svfEaveg, svfSaveg, svfWaveg, svfNaveg, azmt, alt, Ta, Tgwall,
                                                         SBC,
                                                         ewall, Ldown,
-                                                        esky, t, F_sh, CI, Lup, Lup, Lup, Lup)
+                                                        esky, t, Lup, CI, Lup, Lup, Lup, Lup)
 
     # # # # Calculation of radiant flux density and Tmrt # # # #
     # if cyl == 1 and ani == 1:  # Human body considered as a cylinder with Perez et al. (1993)
