@@ -149,13 +149,12 @@ def run_solweig(time_to_run):
     trans = 3
 
     if DSM.bounds == Dem.bounds == Vegdsm.bounds:  # simple sanity check here to make sure rasters are aligned
-        rez = sol.Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS, svfveg, svfNveg,
+        mrt = sol.Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS, svfveg, svfNveg,
                                      svfEveg,
                                      svfSveg, svfWveg, svfaveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, walls, dirwalls,
                                      location, tzone, year, month, day, doy, hour, minu, Ws, Ta, RH,
                                      radG, Twater=15.0, ani=0, cyl=1, usevegdem=1, onlyglobal=1, elvis=0, landcover=0,
                                      lc_grid=None)
-    mrt = rez['Tmrt']
 
     root = 'output/' + time_to_run.tz_convert(None).strftime('%Y-%m-%d-%H00')
 

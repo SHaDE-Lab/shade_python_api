@@ -233,9 +233,9 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
         Tgamp = (TgK * altmax - Tstart) + Tstart
         Tgampwall = (TgK_wall * altmax - Tstart_wall) + Tstart_wall
         Tg = Tgamp * np.sin((((dectime - np.floor(dectime)) - SNUP / 24) / (
-                    TmaxLST / 24 - SNUP / 24)) * np.pi / 2) + Tstart  # 2015 a, based on max sun altitude
+                TmaxLST / 24 - SNUP / 24)) * np.pi / 2) + Tstart  # 2015 a, based on max sun altitude
         Tgwall = Tgampwall * np.sin((((dectime - np.floor(dectime)) - SNUP / 24) / (
-                    TmaxLST_wall / 24 - SNUP / 24)) * np.pi / 2) + Tstart_wall  # 2015a, based on max sun altitude
+                TmaxLST_wall / 24 - SNUP / 24)) * np.pi / 2) + Tstart_wall  # 2015a, based on max sun altitude
 
         if Tgwall < 0:  # temporary for removing low Tg during morning 20130205
             # Tg = 0
@@ -285,8 +285,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
 
         # # # # # # # Calculation of shortwave daytime radiative fluxes # # # # # # #
         Kdown = radI * shadow * np.sin(alt * (np.pi / 180)) + dRad + albedo_b * (1 - svfbuveg) * (
-                    radG * (1 - F_sh) + radD * F_sh)  # *sin(altitude(i) * (pi / 180))
-
+                radG * (1 - F_sh) + radD * F_sh)  # *sin(altitude(i) * (pi / 180))
 
         Kup, KupE, KupS, KupW, KupN = Kup_veg_2015a(radI, radD, radG, alt, svfbuveg, albedo_b, F_sh, gvfalb,
                                                     gvfalbE, gvfalbS, gvfalbW, gvfalbN, gvfalbnosh, gvfalbnoshE,
@@ -303,7 +302,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     else:  # # # # # # # NIGHTTIME # # # # # # # #
         print('nighttime', flush=True)
 
-        CI = 1  #may change here
+        CI = 1  # may change here
 
         Tgwall = 0
         # CI_Tg = -999  # F_sh = []
@@ -330,9 +329,10 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     # # # # Lside # # # #
     if alt > 0:
         Least, Lsouth, Lwest, Lnorth = Lside_veg_v2015a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg,
-                                                    svfEaveg, svfSaveg, svfWaveg, svfNaveg, azmt, alt, Ta, Tgwall, SBC,
-                                                    ewall, Ldown,
-                                                    esky, t, F_sh, CI, LupE, LupS, LupW, LupN)
+                                                        svfEaveg, svfSaveg, svfWaveg, svfNaveg, azmt, alt, Ta, Tgwall,
+                                                        SBC,
+                                                        ewall, Ldown,
+                                                        esky, t, F_sh, CI, LupE, LupS, LupW, LupN)
     else:
         Least, Lsouth, Lwest, Lnorth = Lside_veg_v2015a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg,
                                                         svfEaveg, svfSaveg, svfWaveg, svfNaveg, azmt, alt, Ta, Tgwall,
@@ -352,7 +352,7 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     if alt > 0:
         Sstr = absK * (KsideI * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (
                 Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
-    else: # night time all the k is 0 so we can skip it
+    else:  # night time all the k is 0 so we can skip it
         Sstr = absK * (absL * (
                 Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside))
     Tmrt = np.sqrt(np.sqrt((Sstr / (absL * SBC)))) - 273.2
@@ -367,5 +367,4 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     print('mrt done', flush=True)
     print(datetime.datetime.now())
 
-    return {'Tmrt': Tmrt}
-
+    return Tmrt
