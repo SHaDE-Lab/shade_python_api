@@ -307,33 +307,18 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     else:  # # # # # # # NIGHTTIME # # # # # # # #
         print('nighttime', flush=True)
 
-        CI = 1  ##may change here
+        CI = 1  #may change here
 
         Tgwall = 0
         # CI_Tg = -999  # F_sh = []
 
         # Nocturnal K fluxes set to 0
-        Knight = np.zeros((rows, cols))
-        Kdown = np.zeros((rows, cols))
-        Kwest = np.zeros((rows, cols))
-        Kup = np.zeros((rows, cols))
-        Keast = np.zeros((rows, cols))
-        Ksouth = np.zeros((rows, cols))
-        Knorth = np.zeros((rows, cols))
-        KsideI = np.zeros((rows, cols))
-        # KsideD = np.zeros((rows, cols))
-        F_sh = np.zeros((rows, cols))
-        Tg = np.zeros((rows, cols))
+        # omitted to save memory
 
         # # # # Lup # # # #
-        Lup = SBC * emis_grid * ((Knight + Ta + Tg + 273.15) ** 4)
+        Lup = SBC * emis_grid * ((Ta + 273.15) ** 4)
         if landcover == 1:
             Lup[lc_grid == 3] = SBC * 0.98 * (Twater + 273.15) ** 4  # nocturnal Water temp
-
-        LupE = Lup
-        LupS = Lup
-        LupW = Lup
-        LupN = Lup
 
     # # # # Ldown # # # #
     # Ldown = (svf + svfveg - 1) * esky * SBC * ((Ta + 273.15) ** 4) + (2 - svfveg - svfaveg) * ewall * SBC *  ((Ta + 273.15) ** 4) + (svfaveg - svf) * ewall * SBC * ((Ta + 273.15 + Tgwall) ** 4) + (2 - svf - svfveg) * (1 - ewall) * esky * SBC * ((Ta + 273.15) ** 4)  # Jonsson et al.(2006)
@@ -347,10 +332,17 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     Ldown += (2 - svf - svfveg) * (1 - ewall) * esky * SBC * ((Ta + 273.15) ** 4)
 
     # # # # Lside # # # #
-    Least, Lsouth, Lwest, Lnorth = Lside_veg_v2015a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg,
+    if alt > 0:
+        Least, Lsouth, Lwest, Lnorth = Lside_veg_v2015a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg,
                                                     svfEaveg, svfSaveg, svfWaveg, svfNaveg, azmt, alt, Ta, Tgwall, SBC,
                                                     ewall, Ldown,
                                                     esky, t, F_sh, CI, LupE, LupS, LupW, LupN)
+    else:
+        Least, Lsouth, Lwest, Lnorth = Lside_veg_v2015a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg,
+                                                        svfEaveg, svfSaveg, svfWaveg, svfNaveg, azmt, alt, Ta, Tgwall,
+                                                        SBC,
+                                                        ewall, Ldown,
+                                                        esky, t, F_sh, CI, Lup, Lup, Lup, Lup)
 
     # # # # Calculation of radiant flux density and Tmrt # # # #
     # if cyl == 1 and ani == 1:  # Human body considered as a cylinder with Perez et al. (1993)
@@ -361,9 +353,12 @@ def Solweig_2021a_calc(dsm, vegdsm, dem, res, trans, svf, svfN, svfW, svfE, svfS
     #     Sstr = absK * ((Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) +absL * (Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
     print('calculating mrt', flush=True)
     print(datetime.datetime.now())
-    Sstr = absK * (KsideI * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (
+    if alt > 0:
+        Sstr = absK * (KsideI * Fcyl + (Kdown + Kup) * Fup + (Knorth + Keast + Ksouth + Kwest) * Fside) + absL * (
                 Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside)
-
+    else: # night time all the k is 0 so we can skip it
+        Sstr = absK * (absL * (
+                Ldown * Fup + Lup * Fup + Lnorth * Fside + Least * Fside + Lsouth * Fside + Lwest * Fside))
     Tmrt = np.sqrt(np.sqrt((Sstr / (absL * SBC)))) - 273.2
 
     # if write==True:
