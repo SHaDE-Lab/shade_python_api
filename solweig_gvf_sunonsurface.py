@@ -208,35 +208,33 @@ def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, T
         gvfalb = np.sum(gvfalbi)
         gvfalbnosh = np.sum(gvfalbnoshi)
 
+        azimuth_mask_E = (azimuthA >= 0) & (azimuthA < 180)
+        azimuth_mask_S = (azimuthA >= 90) & (azimuthA < 270)
+        azimuth_mask_W = (azimuthA >= 180) & (azimuthA < 360)
+        azimuth_mask_N = (azimuthA >= 270) | (azimuthA < 90)
+
+        gvfLupE = np.sum(gvfLup[azimuth_mask_E])
+        gvfalbE = np.sum(gvfalb[azimuth_mask_E])
+        gvfalbnoshE = np.sum(gvfalbnosh[azimuth_mask_E])
+
+        gvfLupS = np.sum(gvfLup[azimuth_mask_S])
+        gvfalbS = np.sum(gvfalb[azimuth_mask_S])
+        gvfalbnoshS = np.sum(gvfalbnosh[azimuth_mask_S])
+
+        gvfLupW = np.sum(gvfLup[azimuth_mask_W])
+        gvfalbW = np.sum(gvfalb[azimuth_mask_W])
+        gvfalbnoshW = np.sum(gvfalbnosh[azimuth_mask_W])
+
+        gvfLupN = np.sum(gvfLup[azimuth_mask_N])
+        gvfalbN = np.sum(gvfalb[azimuth_mask_N])
+        gvfalbnoshN = np.sum(gvfalbnosh[azimuth_mask_N])
+
     bias = SBC * emis_grid * (Ta + 273.15) ** 4
-    azimuth_mask_E = (azimuthA >= 0) & (azimuthA < 180)
-    azimuth_mask_S = (azimuthA >= 90) & (azimuthA < 270)
-    azimuth_mask_W = (azimuthA >= 180) & (azimuthA < 360)
-    azimuth_mask_N = (azimuthA >= 270) | (azimuthA < 90)
 
-    gvfLupE = np.sum(gvfLup[azimuth_mask_E])
-    gvfalbE = np.sum(gvfalb[azimuth_mask_E])
-    gvfalbnoshE = np.sum(gvfalbnosh[azimuth_mask_E])
-
-    gvfLupS = np.sum(gvfLup[azimuth_mask_S])
-    gvfalbS = np.sum(gvfalb[azimuth_mask_S])
-    gvfalbnoshS = np.sum(gvfalbnosh[azimuth_mask_S])
-
-    gvfLupW = np.sum(gvfLup[azimuth_mask_W])
-    gvfalbW = np.sum(gvfalb[azimuth_mask_W])
-    gvfalbnoshW = np.sum(gvfalbnosh[azimuth_mask_W])
-
-    gvfLupN = np.sum(gvfLup[azimuth_mask_N])
-    gvfalbN = np.sum(gvfalb[azimuth_mask_N])
-    gvfalbnoshN = np.sum(gvfalbnosh[azimuth_mask_N])
-
-    gvfLup = gvfLupN + gvfLupS + gvfLupE + gvfLupW
     gvfLup /= azimuthA.__len__()
     gvfLup += bias
-    gvfalb = gvfalbN + gvfalbS + gvfalbE + gvfalbW
     gvfalb /= azimuthA.__len__()
 
-    gvfalbnosh = gvfalbnoshN + gvfalbnoshS + gvfalbnoshE + gvfalbnoshW
     gvfalbnosh /= azimuthA.__len__()
 
     gvfLupE /= azimuthA.__len__() / 2
