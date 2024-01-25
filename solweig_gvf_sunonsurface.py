@@ -191,12 +191,22 @@ def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, T
     azimuthA = np.arange(5, 359, 20)  # Search directions for Ground View Factors (GVF)
 
     #### Ground View Factors ####
-    gvfLup = np.zeros((rows, cols))
-    gvfalb = np.zeros((rows, cols))
-    gvfalbnosh = np.zeros((rows, cols))
+    gvfLupE = 0
+    gvfLupS = 0
+    gvfLupW = 0
+    gvfLupN = 0
+    gvfalbE = 0
+    gvfalbS = 0
+    gvfalbW = 0
+    gvfalbN = 0
+    gvfalbnoshE = 0
+    gvfalbnoshS = 0
+    gvfalbnoshW = 0
+    gvfalbnoshN = 0
+
     #  sunwall=wallinsun_2015a(buildings,azimuth(i),shadow,psi(i),dirwalls,walls);
     sunwall = (wallsun / walls * buildings) == 1  # new as from 2015a
-
+    # 5 25 45 65 85 105 125 145 165 185 205 225 245 265 285 305 325 345
     for j in np.arange(0, azimuthA.__len__()):
         gvfLupi, gvfalbi, gvfalbnoshi = sunonsurface_2018a(azimuthA[j], res, buildings, shadow, sunwall,
                                                                     first,
@@ -204,37 +214,37 @@ def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, T
                                                                     Ta,
                                                                     emis_grid, ewall, alb_grid, SBC, albedo_b, Twater,
                                                                     lc_grid, landcover)
-        gvfLup = np.sum(gvfLupi)
-        gvfalb = np.sum(gvfalbi)
-        gvfalbnosh = np.sum(gvfalbnoshi)
+        if (azimuthA[j] >= 0) and (azimuthA[j] < 180):
+            gvfLupE += gvfLupi
+            gvfalbE += gvfalbi
+            gvfalbnoshE += gvfalbnoshi
 
-        azimuth_mask_E = (azimuthA >= 0) & (azimuthA < 180)
-        azimuth_mask_S = (azimuthA >= 90) & (azimuthA < 270)
-        azimuth_mask_W = (azimuthA >= 180) & (azimuthA < 360)
-        azimuth_mask_N = (azimuthA >= 270) | (azimuthA < 90)
+        if (azimuthA[j] >= 90) and (azimuthA[j] < 270):
+            gvfLupS += gvfLupi
+            gvfalbS += gvfalbi
+            gvfalbnoshS += gvfalbnoshi
 
-        gvfLupE = np.sum(gvfLup[azimuth_mask_E])
-        gvfalbE = np.sum(gvfalb[azimuth_mask_E])
-        gvfalbnoshE = np.sum(gvfalbnosh[azimuth_mask_E])
+        if (azimuthA[j] >= 180) and (azimuthA[j] < 360):
+            gvfLupW += gvfLupi
+            gvfalbW += gvfalbi
+            gvfalbnoshW += gvfalbnoshi
 
-        gvfLupS = np.sum(gvfLup[azimuth_mask_S])
-        gvfalbS = np.sum(gvfalb[azimuth_mask_S])
-        gvfalbnoshS = np.sum(gvfalbnosh[azimuth_mask_S])
-
-        gvfLupW = np.sum(gvfLup[azimuth_mask_W])
-        gvfalbW = np.sum(gvfalb[azimuth_mask_W])
-        gvfalbnoshW = np.sum(gvfalbnosh[azimuth_mask_W])
-
-        gvfLupN = np.sum(gvfLup[azimuth_mask_N])
-        gvfalbN = np.sum(gvfalb[azimuth_mask_N])
-        gvfalbnoshN = np.sum(gvfalbnosh[azimuth_mask_N])
+        if (azimuthA[j] >= 270) or (azimuthA[j] < 90):
+            gvfLupN += gvfLupi
+            gvfalbN += gvfalbi
+            gvfalbnoshN += gvfalbnoshi
 
     bias = SBC * emis_grid * (Ta + 273.15) ** 4
 
+
+    gvfLup = gvfLupN + gvfLupS + gvfLupE + gvfLupW
     gvfLup /= azimuthA.__len__()
     gvfLup += bias
+
+    gvfalb = gvfalbN + gvfalbS + gvfalbE + gvfalbW
     gvfalb /= azimuthA.__len__()
 
+    gvfalbnosh = gvfalbnoshN + gvfalbnoshS + gvfalbnoshE + gvfalbnoshW
     gvfalbnosh /= azimuthA.__len__()
 
     gvfLupE /= azimuthA.__len__() / 2
