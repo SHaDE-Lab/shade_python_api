@@ -214,21 +214,21 @@ def gvf_2018a(wallsun, walls, buildings, res, shadow, first, second, dirwalls, T
     azimuth_mask_W = (azimuthA >= 180) & (azimuthA < 360)
     azimuth_mask_N = (azimuthA >= 270) | (azimuthA < 90)
 
-    gvfLupE = np.sum(gvfLupi[azimuth_mask_E])
-    gvfalbE = np.sum(gvfalbi[azimuth_mask_E])
-    gvfalbnoshE = np.sum(gvfalbnoshi[azimuth_mask_E])
+    gvfLupE = np.sum(gvfLup[azimuth_mask_E])
+    gvfalbE = np.sum(gvfalb[azimuth_mask_E])
+    gvfalbnoshE = np.sum(gvfalbnosh[azimuth_mask_E])
 
-    gvfLupS = np.sum(gvfLupi[azimuth_mask_S])
-    gvfalbS = np.sum(gvfalbi[azimuth_mask_S])
-    gvfalbnoshS = np.sum(gvfalbnoshi[azimuth_mask_S])
+    gvfLupS = np.sum(gvfLup[azimuth_mask_S])
+    gvfalbS = np.sum(gvfalb[azimuth_mask_S])
+    gvfalbnoshS = np.sum(gvfalbnosh[azimuth_mask_S])
 
-    gvfLupW = np.sum(gvfLupi[azimuth_mask_W])
-    gvfalbW = np.sum(gvfalbi[azimuth_mask_W])
-    gvfalbnoshW = np.sum(gvfalbnoshi[azimuth_mask_W])
+    gvfLupW = np.sum(gvfLup[azimuth_mask_W])
+    gvfalbW = np.sum(gvfalb[azimuth_mask_W])
+    gvfalbnoshW = np.sum(gvfalbnosh[azimuth_mask_W])
 
-    gvfLupN = np.sum(gvfLupi[azimuth_mask_N])
-    gvfalbN = np.sum(gvfalbi[azimuth_mask_N])
-    gvfalbnoshN = np.sum(gvfalbnoshi[azimuth_mask_N])
+    gvfLupN = np.sum(gvfLup[azimuth_mask_N])
+    gvfalbN = np.sum(gvfalb[azimuth_mask_N])
+    gvfalbnoshN = np.sum(gvfalbnosh[azimuth_mask_N])
 
     gvfLup = gvfLupN + gvfLupS + gvfLupE + gvfLupW
     gvfLup /= azimuthA.__len__()
