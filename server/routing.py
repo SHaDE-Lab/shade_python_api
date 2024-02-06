@@ -7,6 +7,7 @@ import osmnx as ox
 from shapely.geometry import LineString
 import simplekml
 import geojson
+import convertToGraph 
 
 default_mrt_file_path = 'output/2023-4-8-2100_mrt.tif'
 default_graph_path = 'output/2023-4-8-2100_graph_networked.graphml'
@@ -15,7 +16,8 @@ def convert_to_pixel(lat, long, raster):
     return raster.index(lat, long)
 
 def make_walking_network_graph(mean_radiant_temp, date_time_string):
-    # bounding box of tempe campus
+    # bounding box of tempe campus 
+    # TODO CHANGE TO REALLY BE THE BOUNDING BOX
     north = 33.42796506379531
     west = -111.94015084151006
 
@@ -23,8 +25,9 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
     east = -111.92634308211977
     granularity = 1
 
-    ox.settings.use_cache = True
-    G = ox.graph_from_bbox(north, south, east, west, network_type='walk')
+    # ox.settings.use_cache = True
+    #G = ox.graph_from_bbox(north, south, east, west, network_type='walk')
+    G = convertToGraph.convert_shp2graph('Maps/tempeShape/tempeCampusSelected.shp', make_G_bidi=True, name='tempe')
     G = ox.project_graph(G)
     # ox.plot_graph(G)
     mrt_data = mean_radiant_temp.read(1)
@@ -79,7 +82,8 @@ def get_route(start_coord, stop_coord, date_time_string):
 
     if not os.path.exists(mrt_file_path):
         mrt_file_path = default_mrt_file_path
-        G = ox.load_graphml(default_graph_path, edge_dtypes=attribute_types)
+        # G = ox.load_graphml(default_graph_path, edge_dtypes=attribute_types)
+        G = make_walking_network_graph(rasterio.open(mrt_file_path), date_time_string)
         print(f'using default graph for {date_time_string}')
     elif os.path.exists(graph_path):
         G = ox.load_graphml(graph_path, edge_dtypes=attribute_types)
@@ -101,7 +105,7 @@ def get_route(start_coord, stop_coord, date_time_string):
     # Convert the route to a GeoDataFram
 
     # Plot the graph with the route highlighted
-    # ox.plot_graph_route(G, route)
+    ox.plot_graph_route(G, route)
     # convert the route to a kml file
 
     kml = convert_to_kml(G, route)
@@ -114,7 +118,6 @@ def get_route(start_coord, stop_coord, date_time_string):
     return kml, statistics, geojson
 
 def convert_to_geoJSON(G, route):
-    # for each node in the route, get the lat/long
     # for each node in the route, get the lat/long
     route_coords = []
     for node in route:
