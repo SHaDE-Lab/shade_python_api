@@ -34,6 +34,7 @@ def main():
     file_cleanup()
 
 def run_solweig_buildup():
+    #TODO make this start from todays hour instead of midnight (no point in calculating all the work for it to be deleted)
     for day in range(3):
         today = datetime.now(timezone.utc)
         today = today.replace(day=today.day + day)
