@@ -156,7 +156,7 @@ def run_solweig(time_to_run):
                                      radG, Twater=15.0, ani=0, cyl=1, usevegdem=1, onlyglobal=1, elvis=0, landcover=0,
                                      lc_grid=None)
 
-    root = 'output/' + time_to_run.tz_convert(None).strftime('%Y-%m-%d-%H00')
+    root = 'output/' + time_to_run.strftime('%Y-%m-%d_%H-%M')
 
     rt = rio.open(root + '_mrt.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
                   crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype)

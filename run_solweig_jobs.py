@@ -24,6 +24,12 @@ def main():
             # gets the timestamp but zeros out the minutes, seconds, and microseconds
             today_ts = pd.Timestamp(today).replace(minute=0, second=0, microsecond=0)
             run_solweig_hourly(today_ts)
+        elif sys.argv[1] == "historic":
+            # get the date from the second argument
+            today = sys.argv[2]
+            today_ts = pd.Timestamp(today).replace(minute=0, second=0, microsecond=0)
+            # run solweig for all of the hours in the day
+            run_solweig_hourly(today_ts)
     else:
         # Get the Date
         today = datetime.now(timezone.utc)
@@ -73,7 +79,8 @@ def file_cleanup():
         if file.endswith('.tif') or file.endswith('.graphml') and file < datetime.now().strftime('%Y-%m-%d-%H00'):
             print('deleting {0}'.format(file))
             # TODO DUMP TO LONG TERM STORAGE
-            os.remove(os.path.join('output', file))
+            if not file.startswith("default"):
+                os.remove(os.path.join('output', file))
 
 
 if __name__ == '__main__':
