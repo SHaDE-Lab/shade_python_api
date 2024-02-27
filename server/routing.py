@@ -150,24 +150,28 @@ def get_route(start_coord, stop_coord, date_time_string):
     ox.plot_graph_route(G, route)
     # convert the route to a kml file
 
-    kml = convert_to_kml(G, route)
     # calculate stats from the route
     statistics = calculate_statistics(G, route)
     print(statistics)
 
-    geojson = convert_to_geoJSON(G, route)
+    geojson, mrt = convert_to_geoJSON(G, route)
 
-    return kml, statistics, geojson
+    return statistics, geojson, mrt
 
 def convert_to_geoJSON(G, route):
     # for each node in the route, get the lat/long
     route_coords = []
+    mrt_values = []
     for node in route:
         node_coords = ((G.nodes[node]['lon'], G.nodes[node]['lat']))
         route_coords.append(node_coords)
+        if route.index(node) < len(route) - 1:
+            # avg mrg value between the two nodes in the route
+            edge_data = G.get_edge_data(node, route[route.index(node) + 1])[0]
+            mrt_values.append(float(edge_data['mrt']) / edge_data['length'])
     # convert the route to a geojson
     route_geojson = geojson.LineString(route_coords)
-    return route_geojson
+    return route_geojson, mrt_values
 
 def convert_to_kml(G, route):
     kml = simplekml.Kml()
