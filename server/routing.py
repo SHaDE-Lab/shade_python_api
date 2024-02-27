@@ -61,10 +61,10 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
     West = -111.941743
 
     # ox.settings.use_cache = True
-    # G = ox.graph_from_bbox(North, South, East, West, network_type='walk')
-    G = readFromGeopackage(geopackage_path)
+    G = ox.graph_from_bbox(North, South, East, West, network_type='walk')
+    # G = readFromGeopackage(geopackage_path)
     G = ox.project_graph(G)
-    ox.plot_graph(G)
+    # ox.plot_graph(G)
     mrt_data = mean_radiant_temp.read(1)
 
     for u, v, data in G.edges(data=True):
