@@ -7,8 +7,8 @@ East = -111.917768
 West = -111.941743
 
 # ox.settings.use_cache = True
-G = ox.graph_from_bbox(North, South, East, West, network_type='walk', simplify=True)
-
+G = ox.graph_from_bbox(North, South, East, West, network_type='walk')
+G = ox.utils_graph.remove_isolated_nodes(G)
 ox.plot_graph(G)
 
 # saves graph as geopackage and shapefile

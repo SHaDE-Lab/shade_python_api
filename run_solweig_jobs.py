@@ -76,11 +76,11 @@ def file_cleanup():
     # clean up any existing files in the output directory
     for file in os.listdir('output'):
         # delete a file if the time stamp is before the current time
-        if file.endswith('.tif') or file.endswith('.graphml') and file < datetime.now().strftime('%Y-%m-%d-%H00'):
+        if file.endswith('.tif') or file.endswith('.graphml') and file < datetime.now().strftime('%Y-%m-%d-%H00') \
+                and file != 'defualt_graph_networked.graphml' and file != 'default_mrt.tif':
             print('deleting {0}'.format(file))
             # TODO DUMP TO LONG TERM STORAGE
-            if not file.startswith("default"):
-                os.remove(os.path.join('output', file))
+            os.remove(os.path.join('output', file))
 
 
 if __name__ == '__main__':
