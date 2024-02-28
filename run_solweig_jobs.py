@@ -68,13 +68,16 @@ def run_solweig_hourly(today_ts):
 
 
 def file_cleanup():
+    default_mrt_file_path = '2023-4-8-2100_mrt.tif'
+    default_graph_path = '2023-4-8-2100_graph_networked.graphml' 
     # clean up any existing files in the output directory
     for file in os.listdir('output'):
         # delete a file if the time stamp is before the current time
         if file.endswith('.tif') or file.endswith('.graphml') and file < datetime.now().strftime('%Y-%m-%d-%H00'):
             print('deleting {0}'.format(file))
             # TODO DUMP TO LONG TERM STORAGE
-            os.remove(os.path.join('output', file))
+            if file not default_graph_path and file not default_mrt_file_path
+                os.remove(os.path.join('output', file))
 
 
 if __name__ == '__main__':
