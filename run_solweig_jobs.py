@@ -76,7 +76,7 @@ def file_cleanup():
         if file.endswith('.tif') or file.endswith('.graphml') and file < datetime.now().strftime('%Y-%m-%d-%H00'):
             print('deleting {0}'.format(file))
             # TODO DUMP TO LONG TERM STORAGE
-            if file not default_graph_path and file not default_mrt_file_path
+            if file != default_graph_path and file != default_mrt_file_path
                 os.remove(os.path.join('output', file))
 
 
