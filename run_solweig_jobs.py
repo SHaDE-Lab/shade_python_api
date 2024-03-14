@@ -34,11 +34,10 @@ def main():
     file_cleanup()
 
 def run_solweig_buildup():
-    #TODO make this start from todays hour instead of midnight (no point in calculating all the work for it to be deleted)
+    today = datetime.now(timezone.utc)
     for day in range(3):
-        today = datetime.now(timezone.utc)
-        today = today.replace(day=today.day + day)
-        run_solweig_daily(today)
+        when_to_run = today.replace(day=today.day + day)
+        run_solweig_daily(when_to_run)
 
 def run_solweig_daily(today):
     # run solweig for all of the hours in the day
@@ -52,7 +51,9 @@ def run_solweig_daily(today):
     file_cleanup()
 
 
-def run_solweig_hourly(today_ts):
+def run_solweig_hourly(today_ts, force_make=false):
+    if not force_make and today_ts < datetime.now(timezone.utc):
+        return 
     print("running solweig for {0}".format(today_ts))
     timekey = today_ts.strftime('%Y-%m-%d-%H00')
     # run solweig
