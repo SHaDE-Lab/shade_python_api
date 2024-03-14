@@ -73,11 +73,14 @@ def file_cleanup():
     # clean up any existing files in the output directory
     for file in os.listdir('output'):
         # delete a file if the time stamp is before the current time
-        if file.endswith('.tif') or file.endswith('.graphml') and file < datetime.now().strftime('%Y-%m-%d-%H00'):
-            print('deleting {0}'.format(file))
-            # TODO DUMP TO LONG TERM STORAGE
-            if file != default_graph_path and file != default_mrt_file_path:
-                os.remove(os.path.join('output', file))
+        # get time stamp from file name
+        if file.count('_') > 1:
+            file_time = datetime.strptime(file.split('_')[0], '%Y-%m-%d-%H00')
+            if file.endswith('.tif') or file.endswith('.graphml') and file_time < datetime.now().strftime('%Y-%m-%d-%H00'):
+                print('deleting {0}'.format(file), flush=True)
+                # TODO DUMP TO LONG TERM STORAGE
+                if file != default_graph_path and file != default_mrt_file_path:
+                    os.remove(os.path.join('output', file))
 
 
 if __name__ == '__main__':
