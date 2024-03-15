@@ -74,7 +74,6 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
 def get_route(start_coord, stop_coord, date_time_string):
     # if the graph file exists, load it, otherwise make it
     graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
-    mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30-1200"
     attribute_types = {'cost': float}
 
     if os.path.exists(graph_path):
@@ -93,7 +92,7 @@ def get_route(start_coord, stop_coord, date_time_string):
     route = ox.routing.shortest_path(G, orig_node, dest_node, weight='cost')
     # route is list of node IDs constituting the shortest path
     print('path found in {0}'.format(time.time() - path_time))
-    # Convert the route to a GeoDataFram
+    # Convert the route to a GeoDataFrame
 
     # Plot the graph with the route highlighted
     # ox.plot_graph_route(G, route)
@@ -117,7 +116,7 @@ def convert_to_geoJSON(G, route):
         if route.index(node) < len(route) - 1:
             # avg mrg value between the two nodes in the route
             edge_data = G.get_edge_data(node, route[route.index(node) + 1])[0]
-            mrt_values.append(float(edge_data['mrt']) / edge_data['length'])
+            mrt_values.append(float(edge_data['mrt']))
     # convert the route to a geojson
     route_geojson = geojson.LineString(route_coords)
     return route_geojson, mrt_values
@@ -151,6 +150,7 @@ def calculate_statistics(G, route):
     length = 0.0
     # calculate the total mrt of the route
     mrt = 0.0
+    weighted_sum = 0.0
     for i in range(len(route) - 1):
         source_node = route[i]
         target_node = route[i + 1]
@@ -158,8 +158,9 @@ def calculate_statistics(G, route):
         edge = G.get_edge_data(source_node, target_node)[0]
         length += float(edge['length'])
         mrt += float(edge['mrt'])
+        weighted_sum += float(edge['mrt']) * float(edge['length'])
         print(f"edge {i} length: {length}, mrt: {mrt}", flush=True)
-    average_mrt = mrt / length
+    average_mrt = weighted_sum / length
     # return stats dictionary
     return {'length': length, 'mrt': mrt, 'average_mrt': average_mrt}
 
