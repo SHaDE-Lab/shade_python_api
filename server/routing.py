@@ -162,7 +162,7 @@ def calculate_statistics(G, route):
         # Use .edges() to get edge data for the current pair of nodes
         edge = G.get_edge_data(source_node, target_node)[0]
         length += float(edge['length'])
-        mrt += float(edge['mrt'])
+        mrt += float(edge['cost'])
     average_mrt = mrt / (len(route) - 1)
     # return stats dictionary
     return {'length': length, 'mrt': mrt, 'average_mrt': average_mrt}
