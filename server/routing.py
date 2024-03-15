@@ -77,16 +77,11 @@ def get_route(start_coord, stop_coord, date_time_string):
     mrt_file_path = 'output/{0}_mrt.tif'.format(date_time_string)  # expected format is "2023-03-30-1200"
     attribute_types = {'cost': float}
 
-    if not os.path.exists(mrt_file_path):
-        mrt_file_path = default_mrt_file_path
-        G = ox.load_graphml(default_graph_path, edge_dtypes=attribute_types)
-        print(f'using default graph for {date_time_string}')
-    elif os.path.exists(graph_path):
+    if os.path.exists(graph_path):
         G = ox.load_graphml(graph_path, edge_dtypes=attribute_types)
     else:
-        # Create a graph representing the raster cells and their connections
-        with rasterio.open(mrt_file_path) as src:
-            G = make_walking_network_graph(src, date_time_string)
+        G = ox.load_graphml(default_graph_path, edge_dtypes=attribute_types)
+        print(f'using default graph for {date_time_string}', flush=True)
     path_time = time.time()
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:26912", always_xy=True)
     # Find the nearest network nodes to the origin and destination
@@ -162,8 +157,9 @@ def calculate_statistics(G, route):
         # Use .edges() to get edge data for the current pair of nodes
         edge = G.get_edge_data(source_node, target_node)[0]
         length += float(edge['length'])
-        mrt += float(edge['cost'])
-    average_mrt = mrt / (len(route) - 1)
+        mrt += float(edge['mrt'])
+        print(f"edge {i} length: {length}, mrt: {mrt}", flush=True)
+    average_mrt = mrt / length
     # return stats dictionary
     return {'length': length, 'mrt': mrt, 'average_mrt': average_mrt}
 

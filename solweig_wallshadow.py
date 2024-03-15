@@ -191,7 +191,7 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
     This function calculates shadows on a DSM and shadow height on building
     walls including both buildings and vegetion units.
     New functionallity to deal with pergolas, August 2021
-    
+
     INPUTS:
     a = DSM
     vegdem = Vegetation canopy DSM (magl)
@@ -200,11 +200,11 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
     scale= scale of DSM (1 meter pixels=1, 2 meter pixels=0.5)
     walls= pixel row 'outside' buildings. will be calculated if empty
     aspect=normal aspect of walls
-    
+
     OUTPUT:
     sh=ground and roof shadow
     wallsh = height of wall that is in shadow
-    wallsun = height of wall that is in sun
+    wallsun = hieght of wall that is in sun
     original Matlab code:
     Fredrik Lindberg 2013-08-14
     fredrikl@gvc.gu.se
@@ -234,25 +234,18 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
     dx = 0
     dy = 0
     dz = 0
-    # temp = np.zeros((sizex, sizey))
-    # tempvegdem = np.zeros((sizex, sizey))
-    # tempvegdem2 = np.zeros((sizex, sizey))
-    # templastfabovea = np.zeros((sizex, sizey))
-    # templastgabovea = np.zeros((sizex, sizey))
-    # bushplant = bush > 1
-    # sh = np.zeros((sizex, sizey))  # shadows from buildings
-    # vbshvegsh = np.copy(sh)  # vegetation blocking buildings
-    # vegsh = np.add(np.zeros((sizex, sizey)), bushplant, dtype=float)  # vegetation shadow
-    # f = np.copy(a)
-    # shvoveg = np.copy(vegdem)  # for vegetation shadowvolume
-    # wallbol = (walls > 0).astype(float)
-
-    # Reuse existing arrays
-    sh = np.zeros((sizex, sizey))
-    vbshvegsh = np.copy(sh)
-    vegsh = np.add(np.zeros((sizex, sizey)), bush > 1, dtype=float)
+    temp = np.zeros((sizex, sizey))
+    tempvegdem = np.zeros((sizex, sizey))
+    tempvegdem2 = np.zeros((sizex, sizey))
+    templastfabovea = np.zeros((sizex, sizey))
+    templastgabovea = np.zeros((sizex, sizey))
+    bushplant = bush > 1
+    sh = np.zeros((sizex, sizey))  # shadows from buildings
+    vbshvegsh = np.copy(sh)  # vegetation blocking buildings
+    vegsh = np.add(np.zeros((sizex, sizey)), bushplant, dtype=float)  # vegetation shadow
     f = np.copy(a)
-    shvoveg = np.copy(vegdem)
+    shvoveg = np.copy(vegdem)  # for vegetation shadowvolume
+    # g = np.copy(sh)
     wallbol = (walls > 0).astype(float)
 
     # other loop parameters
@@ -288,6 +281,11 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
 
         # note: dx and dy represent absolute values while ds is an incremental value
         dz = (ds * index) * tanaltitudebyscale
+        tempvegdem[0:sizex, 0:sizey] = 0
+        tempvegdem2[0:sizex, 0:sizey] = 0
+        temp[0:sizex, 0:sizey] = 0
+        templastfabovea[0:sizex, 0:sizey] = 0.
+        templastgabovea[0:sizex, 0:sizey] = 0.
         absdx = np.abs(dx)
         absdy = np.abs(dy)
         xc1 = int((dx + absdx) / 2)
@@ -299,30 +297,51 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
         yp1 = -int((dy - absdy) / 2)
         yp2 = int(sizey - (dy + absdy) / 2)
 
-        vegdem[xp1:xp2, yp1:yp2] -= dz
-        vegdem2[xp1:xp2, yp1:yp2] -= dz
-        a[xc1:xc2, yc1:yc2] -= dz
+        tempvegdem[xp1:xp2, yp1:yp2] = vegdem[xc1:xc2, yc1:yc2] - dz
+        tempvegdem2[xp1:xp2, yp1:yp2] = vegdem2[xc1:xc2, yc1:yc2] - dz
+        temp[xp1:xp2, yp1:yp2] = a[xc1:xc2, yc1:yc2] - dz
 
-        f = np.fmax(f, a - dz)  # Moving building shadow
-        shvoveg = np.fmax(shvoveg, vegdem - dz)  # moving vegetation shadow volume
+        f = np.fmax(f, temp)  # Moving building shadow
+        shvoveg = np.fmax(shvoveg, tempvegdem)  # moving vegetation shadow volume
         sh[f > a] = 1
         sh[f <= a] = 0
-        fabovea = (vegdem > a - dz).astype(int)
-        gabovea = (vegdem2 > a - dz).astype(int)
+        fabovea = (tempvegdem > a).astype(int)  # vegdem above DEM
+        gabovea = (tempvegdem2 > a).astype(int)  # vegdem2 above DEM
 
-        templastfabovea = vegdem - dzprev
-        templastgabovea = vegdem2 - dzprev
+        # new pergola condition
+        templastfabovea[xp1:xp2, yp1:yp2] = vegdem[xc1:xc2, yc1:yc2] - dzprev
+        templastgabovea[xp1:xp2, yp1:yp2] = vegdem2[xc1:xc2, yc1:yc2] - dzprev
         lastfabovea = templastfabovea > a
         lastgabovea = templastgabovea > a
         dzprev = dz
         vegsh2 = np.add(np.add(np.add(fabovea, gabovea, dtype=float), lastfabovea, dtype=float), lastgabovea,
                         dtype=float)
         vegsh2[vegsh2 == 4] = 0.
+        # vegsh2[vegsh2 == 1] = 0. # This one is the ultimate question...
         vegsh2[vegsh2 > 0] = 1.
+
+        # vegsh2 = fabovea - gabovea #old without pergolas
+        # vegsh = np.max([vegsh, vegsh2], axis=0) #old without pergolas
 
         vegsh = np.fmax(vegsh, vegsh2)
         vegsh[vegsh * sh > 0] = 0
-        vbshvegsh += vegsh
+        vbshvegsh = np.copy(vegsh) + vbshvegsh  # removing shadows 'behind' buildings
+
+        # # vegsh at high sun altitudes # Not needed when pergolas are included
+        # if index == 0:
+        #     firstvegdem = np.copy(tempvegdem) - np.copy(temp)
+        #     firstvegdem[firstvegdem <= 0] = 1000
+        #     vegsh[firstvegdem < dz] = 1
+        #     vegsh *= (vegdem2 > a)
+        #     vbshvegsh = np.zeros((sizex, sizey))
+
+        # # Bush shadow on bush plant # Not needed when pergolas are included
+        # if np.max(bush) > 0 and np.max(fabovea*bush) > 0:
+        #     tempbush = np.zeros((sizex, sizey))
+        #     tempbush[int(xp1):int(xp2), int(yp1):int(yp2)] = bush[int(xc1):int(xc2), int(yc1):int(yc2)] - dz
+        #     g = np.max([g, tempbush], axis=0)
+        #     g = bushplant * g
+
         index += 1
 
     # Removing walls in shadow due to selfshadowing
@@ -339,13 +358,23 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
 
     sh = 1 - sh
     vbshvegsh[vbshvegsh > 0] = 1
+    vbshvegsh = vbshvegsh - vegsh
+
+    # if np.max(bush) > 0: # Not needed when pergolas are included
+    #     g = g-bush
+    #     g[g > 0] = 1
+    #     g[g < 0] = 0
+    #     vegsh = vegsh-bushplant+g
+    #     vegsh[vegsh < 0] = 0
 
     vegsh[vegsh > 0] = 1
     shvoveg = (shvoveg - a) * vegsh  # Vegetation shadow volume
     vegsh = 1 - vegsh
+    vbshvegsh = 1 - vbshvegsh
 
     # wall shadows
     shvo = f - a  # building shadow volume
+    facesun = np.logical_and(facesh + (walls > 0).astype(float) == 1, walls > 0).astype(float)
     wallsun = np.copy(walls - shvo)
     wallsun[wallsun < 0] = 0
     wallsun[facesh == 1] = 0  # Removing walls in "self"-shadow
@@ -357,5 +386,8 @@ def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale
     id = np.where(wallshve > walls)
     wallshve[id] = walls[id]
     wallsun = wallsun - wallshve  # problem with wallshve only
+    id = np.where(wallsun < 0)
+    wallshve[id] = 0
+    wallsun[id] = 0
 
-    return vegsh, sh, wallsun
+    return vegsh, sh, vbshvegsh, wallsh, wallsun, wallshve, facesh, facesun
