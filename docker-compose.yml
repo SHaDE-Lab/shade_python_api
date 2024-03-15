@@ -3,20 +3,12 @@ services:
     build: .
     volumes:
       - data-volume:/app/output
-    deploy:
-      resources:
-        limits:
-          memory: 3500m
   flask-app:
     build: ./server
     ports:
       - "5000:5000"
     volumes:
       - data-volume:/app/output
-    deploy:
-      resources:
-        limits:
-          memory: 500m
   
 volumes:
   data-volume:
