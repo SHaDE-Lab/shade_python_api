@@ -52,7 +52,8 @@ def run_solweig_daily(today):
 
 
 def run_solweig_hourly(today_ts, force_make=False):
-    if force_make or today_ts >= datetime.now(timezone.utc):
+    should_run = force_make or today_ts >= datetime.now(timezone.utc)
+    if not should_run:
         return 
     print("running solweig for {0}".format(today_ts))
     timekey = today_ts.strftime('%Y-%m-%d-%H00')
