@@ -33,29 +33,29 @@ def convert_datetime(datetime):
 def open_files():
     # dsm,vegdsm,dem,res,trans,svf, svfN, svfW, svfE, svfS, svfveg, svfNveg,svfEveg, svfSveg,svfWveg, svfaveg,
     # svfEaveg, svfSaveg, svfWaveg,svfNaveg,walls,dirwalls
-    svf_walls_paths = os.path.join(os.getcwd(), 'tempe_camp_svfs/')
+    svf_walls_paths = os.path.join(os.getcwd(), '2020_svf_s/')
     files_list = [svf_walls_paths + files for files in os.listdir(svf_walls_paths)]
 
     DSM = rio.open(fnmatch.filter(files_list, '*_dsm_al.tif')[0])
     Vegdsm = rio.open(fnmatch.filter(files_list, '*_cdsm_al.tif')[0])
     Dem = rio.open(fnmatch.filter(files_list, '*_dem_al.tif')[0])
-    Svf = rio.open(fnmatch.filter(files_list, '*svfbu_al.tif')[0])
-    SvfN = rio.open(fnmatch.filter(files_list, '*svfN_al.tif')[0])
-    SvfW = rio.open(fnmatch.filter(files_list, '*svfW_al.tif')[0])
-    SvfE = rio.open(fnmatch.filter(files_list, '*svfE_al.tif')[0])
-    SvfS = rio.open(fnmatch.filter(files_list, '*svfS_al.tif')[0])
-    Svfveg = rio.open(fnmatch.filter(files_list, '*svfveg_al.tif')[0])
-    SvfNveg = rio.open(fnmatch.filter(files_list, '*svfNveg_al.tif')[0])
-    SvfEveg = rio.open(fnmatch.filter(files_list, '*svfEveg_al.tif')[0])
-    SvfSveg = rio.open(fnmatch.filter(files_list, '*svfSveg_al.tif')[0])
-    SvfWveg = rio.open(fnmatch.filter(files_list, '*svfWveg_al.tif')[0])
-    Svfaveg = rio.open(fnmatch.filter(files_list, '*svfaveg_al.tif')[0])
-    SvfEaveg = rio.open(fnmatch.filter(files_list, '*svfEaveg_al.tif')[0])
-    SvfSaveg = rio.open(fnmatch.filter(files_list, '*svfSaveg_al.tif')[0])
-    SvfWaveg = rio.open(fnmatch.filter(files_list, '*svfWaveg_al.tif')[0])
-    SvfNaveg = rio.open(fnmatch.filter(files_list, '*svfNaveg_al.tif')[0])
-    Walls = rio.open(fnmatch.filter(files_list, '*_walls_al.tif')[0])
-    Dirwalls = rio.open(fnmatch.filter(files_list, '*_dirwalls_al.tif')[0])
+    Svf = rio.open(fnmatch.filter(files_list, '*updated_bu.tif')[0])
+    SvfN = rio.open(fnmatch.filter(files_list, '*updated_N.tif')[0])
+    SvfW = rio.open(fnmatch.filter(files_list, '*updated_W.tif')[0])
+    SvfE = rio.open(fnmatch.filter(files_list, '*updated_E.tif')[0])
+    SvfS = rio.open(fnmatch.filter(files_list, '*updated_S.tif')[0])
+    Svfveg = rio.open(fnmatch.filter(files_list, '*updated_veg.tif')[0])
+    SvfNveg = rio.open(fnmatch.filter(files_list, '*updated_Nveg.tif')[0])
+    SvfEveg = rio.open(fnmatch.filter(files_list, '*updated_Eveg.tif')[0])
+    SvfSveg = rio.open(fnmatch.filter(files_list, '*updated_Sveg.tif')[0])
+    SvfWveg = rio.open(fnmatch.filter(files_list, '*updated_Wveg.tif')[0])
+    Svfaveg = rio.open(fnmatch.filter(files_list, '*updated_aveg.tif')[0])
+    SvfEaveg = rio.open(fnmatch.filter(files_list, '*updated_Eaveg.tif')[0])
+    SvfSaveg = rio.open(fnmatch.filter(files_list, '*updated_Saveg.tif')[0])
+    SvfWaveg = rio.open(fnmatch.filter(files_list, '*updated_Waveg.tif')[0])
+    SvfNaveg = rio.open(fnmatch.filter(files_list, '*updated_Naveg.tif')[0])
+    Walls = rio.open(fnmatch.filter(files_list, '*updated_walls.tif')[0])
+    Dirwalls = rio.open(fnmatch.filter(files_list, '*updated_dirwalls.tif')[0])
     return DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls
 
 def close_files( DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls):
