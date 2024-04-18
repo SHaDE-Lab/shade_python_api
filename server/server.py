@@ -25,11 +25,12 @@ def route_handler():
         end = (end_long, end_lat)
         date_time = data_dict['dateTime']
         print(f"Received route request from {start} to {end} at {date_time}")
+
         stats, geojson, mrt = get_route(start, end, date_time)
-        return jsonify({'stats': stats, 'geojson': json.dumps(geojson), 'mrt': json.dumps(mrt)})
+        return jsonify({'stats': stats, 'geojson': json.dumps(geojson,ensure_ascii=False), 'mrt': json.dumps(mrt,ensure_ascii=False)})
     except Exception as e:
         # Handle errors appropriately
-        print(e)
+        print(e, flush=True)
         return jsonify({'error': str(e)})
 
 
