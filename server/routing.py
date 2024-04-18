@@ -27,7 +27,7 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
     ox.settings.use_cache = True
     G = ox.graph_from_bbox(north, south, east, west, network_type='walk')
     G = ox.project_graph(G, to_crs=mean_radiant_temp.crs)
-    for mrt_at_point, v, data in G.edges(data=True):
+    for u, v, data in G.edges(data=True):
         # num samples is the edge distance
         if 'geometry' in data:
             # Get the edge's geometry as a LINESTRING
