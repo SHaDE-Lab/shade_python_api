@@ -10,9 +10,10 @@ import geojson
 
 default_mrt_file_path = 'output/2023-4-8-2100_mrt.tif'
 default_graph_path = 'output/2023-4-8-2100_graph_networked.graphml'
-def convert_to_pixel(lat, long, raster):
-    # Get the pixel coordinates from the lat long
-    return raster.index(lat, long)
+def get_data_from_raster(lat, long, raster):
+    # gets the data from the raster at the given lat/long coordinates (should be in same crs as raster)
+    sample = raster.sample([(lat, long)])
+    return next(sample, 0)
 
 def make_walking_network_graph(mean_radiant_temp, date_time_string):
     # bounding box of tempe campus
@@ -25,11 +26,8 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
 
     ox.settings.use_cache = True
     G = ox.graph_from_bbox(north, south, east, west, network_type='walk')
-    G = ox.project_graph(G)
-    # ox.plot_graph(G)
-    mrt_data = mean_radiant_temp.read(1)
-
-    for u, v, data in G.edges(data=True):
+    G = ox.project_graph(G, to_crs=mean_radiant_temp.crs)
+    for mrt_at_point, v, data in G.edges(data=True):
         # num samples is the edge distance
         if 'geometry' in data:
             # Get the edge's geometry as a LINESTRING
@@ -46,8 +44,8 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
                 # Interpolate the point along the LineString
                 point = edge_line.interpolate(alpha, normalized=True)
                 coords = (point.x, point.y)
-                u = convert_to_pixel(coords[0], coords[1], mean_radiant_temp)
-                total_mrt += max(mrt_data[u], 0)
+                mrt_at_point = get_data_from_raster(coords[0], coords[1], mean_radiant_temp)
+                total_mrt += max(mrt_at_point, 0)
         else:
             # If no 'geometry' key, interpolate between u and v
             total_mrt = 0.0
@@ -59,8 +57,8 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
             for i in range(num_samples + 1):
                 alpha = i / num_samples
                 coords = (u_coords[0] + alpha * (v_coords[0] - u_coords[0]), v_coords[1] + alpha * (v_coords[1] - u_coords[1]))
-                u = convert_to_pixel(coords[0], coords[1], mean_radiant_temp)
-                total_mrt += max(mrt_data[u], 0)
+                mrt_at_point = get_data_from_raster(coords[0], coords[1], mean_radiant_temp)
+                total_mrt += max(mrt_at_point, 0)
 
         mean_mrt_value = total_mrt / (num_samples + 1)
 
