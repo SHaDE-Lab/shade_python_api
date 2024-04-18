@@ -36,9 +36,9 @@ def open_files():
     svf_walls_paths = os.path.join(os.getcwd(), '2020_svf_s/')
     files_list = [svf_walls_paths + files for files in os.listdir(svf_walls_paths)]
 
-    DSM = rio.open(fnmatch.filter(files_list, '*_dsm_al.tif')[0])
-    Vegdsm = rio.open(fnmatch.filter(files_list, '*_cdsm_al.tif')[0])
-    Dem = rio.open(fnmatch.filter(files_list, '*_dem_al.tif')[0])
+    DSM = rio.open(fnmatch.filter(files_list, '*updated_dsm.tif')[0])
+    Vegdsm = rio.open(fnmatch.filter(files_list, '*updated_cdsm.tif')[0])
+    Dem = rio.open(fnmatch.filter(files_list, '*updated_dem.tif')[0])
     Svf = rio.open(fnmatch.filter(files_list, '*updated_bu.tif')[0])
     SvfN = rio.open(fnmatch.filter(files_list, '*updated_N.tif')[0])
     SvfW = rio.open(fnmatch.filter(files_list, '*updated_W.tif')[0])
