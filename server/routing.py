@@ -5,7 +5,7 @@ from pyproj import Transformer
 import time
 import osmnx as ox
 from shapely.geometry import LineString
-import simplekml
+#import simplekml
 import geojson
 import geopandas as gpd
 
