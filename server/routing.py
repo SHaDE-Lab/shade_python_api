@@ -89,7 +89,7 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
 def get_route(start_coord, stop_coord, date_time_string):
     # if the graph file exists, load it, otherwise make it
     graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
-    attribute_types = {'cost': float}
+    attribute_types = {'cost': float, 'oneway': str}
 
     if os.path.exists(graph_path):
         G = ox.load_graphml(graph_path, edge_dtypes=attribute_types)
