@@ -1,13 +1,6 @@
 # Use an official Python runtime as a parent image
 FROM andrejreznik/python-gdal:py3.10.0-gdal3.2.3
 
-
-# # Install GDAL dependencies
-# RUN apt-get update \
-#     && apt-get install -y libgdal-dev \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists/*
-
 # Set the working directory to /app
 WORKDIR /app
 

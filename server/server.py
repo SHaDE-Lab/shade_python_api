@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, Response
 from routing import get_route
 from flask_cors import CORS
 import json
+import traceback
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -30,7 +31,7 @@ def route_handler():
         return jsonify({'stats': stats, 'geojson': json.dumps(geojson,ensure_ascii=False), 'mrt': json.dumps(mrt,ensure_ascii=False)})
     except Exception as e:
         # Handle errors appropriately
-        print(e, flush=True)
+        print(traceback.format_exc(), flush=True)
         return jsonify({'error': str(e)})
 
 

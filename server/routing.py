@@ -5,7 +5,6 @@ from pyproj import Transformer
 import time
 import osmnx as ox
 from shapely.geometry import LineString
-#import simplekml
 import geojson
 import geopandas as gpd
 
@@ -41,16 +40,8 @@ def readFromGeopackage(file_path):
     return G
 
 def make_walking_network_graph(mean_radiant_temp, date_time_string):
-    # # bounding box of tempe campus
-    # north = 33.42796506379531
-    # west = -111.94015084151006
-    #
-    # south = 33.41592636331673
-    # east = -111.92634308211977
     granularity = 1
-    #
-    # ox.settings.use_cache = True
-    # G = ox.graph_from_bbox(north, south, east, west, network_type='walk')
+   
     G = readFromGeopackage(default_geopackage_path)
     G = ox.project_graph(G, to_crs=mean_radiant_temp.crs)
     for u, v, data in G.edges(data=True):
@@ -98,7 +89,7 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
 def get_route(start_coord, stop_coord, date_time_string):
     # if the graph file exists, load it, otherwise make it
     graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
-    attribute_types = {'cost': float, 'oneway': float}
+    attribute_types = {'cost': float}
 
     if os.path.exists(graph_path):
         G = ox.load_graphml(graph_path, edge_dtypes=attribute_types)
@@ -114,20 +105,13 @@ def get_route(start_coord, stop_coord, date_time_string):
     orig_node = ox.distance.nearest_nodes(G, long, lat)
     long, lat = transformer.transform(stop_coord[0], stop_coord[1])
     dest_node = ox.distance.nearest_nodes(G, long, lat)
-    print(f'nodes {orig_node} to {dest_node} found in {time.time() - path_time}')
     # Calculate the route using Dijkstra's algorithm (shortest path)
     route = ox.routing.shortest_path(G, orig_node, dest_node, weight='cost')
     # route is list of node IDs constituting the shortest path
-    print(f'path {route} found in {time.time() - path_time}')
-    # Convert the route to a GeoDataFrame
-
-    # Plot the graph with the route highlighted
-    # ox.plot_graph_route(G, route)
-    # convert the route to a kml file
+    print(f'path {route} found in {time.time() - path_time}')  
 
     # calculate stats from the route
     statistics = calculate_statistics(G, route)
-    print(statistics)
 
     geojson, mrt = convert_to_geoJSON(G, route)
 
@@ -147,30 +131,6 @@ def convert_to_geoJSON(G, route):
     # convert the route to a geojson
     route_geojson = geojson.LineString(route_coords)
     return route_geojson, mrt_values
-
-def convert_to_kml(G, route):
-    kml = simplekml.Kml()
-    for i in range(len(route) - 1):
-        source_node = route[i]
-        target_node = route[i + 1]
-        # Use .edges() to get edge data for the current pair of nodes
-        edge_data = G.get_edge_data(source_node, target_node)[0]
-        if edge_data is not None:
-            # Access the edge attributes
-            # Create a placemark for the edge with name and coordinates
-            name = edge_data.get('name', 'unnamed')
-            # Get the coordinates of the source and target nodes
-            source_coords = (G.nodes[source_node]['x'], G.nodes[source_node]['y'])
-            target_coords = (G.nodes[target_node]['x'], G.nodes[target_node]['y'])
-
-            # Create a LineString in the KML
-            coords = [source_coords, target_coords]
-            kml.newlinestring(name=name, coords=coords)
-    kml.save('output/route.kml')
-    # Save the KML to a string
-    kml_string = kml.kml()
-
-    return kml_string
 
 def calculate_statistics(G, route):
     if route and len(route) < 2:

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd
 from run_solweig_jobs import run_solweig_hourly, run_solweig_buildup, run_solweig_daily
 import schedule
+
 def startup_function(output_folder):
     print("File generator started!", flush=True)
     run_solweig_buildup()
@@ -15,7 +16,7 @@ def daily_function(output_folder):
 def hourly_function(output_folder):
     hour_from_now = datetime.now(timezone.utc) + timedelta(hours=1)
     hour_from_now = pd.Timestamp(hour_from_now).replace(minute=0, second=0, microsecond=0)
-    print(f"Generating file for {hour_from_now}")
+    print(f"Generating file for {hour_from_now}", flush=True)
     run_solweig_hourly(hour_from_now)
 
 if __name__ == "__main__":
@@ -33,4 +34,5 @@ if __name__ == "__main__":
         # Run pending jobs
         print("Checking for jobs", flush=True)
         schedule.run_pending()
+        # check job every hour 
         time.sleep(60*60)
