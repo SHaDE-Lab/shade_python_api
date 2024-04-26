@@ -8,8 +8,8 @@ from shapely.geometry import LineString
 import geojson
 import geopandas as gpd
 
-default_mrt_file_path = 'output/2023-4-8-2100_mrt.tif'
-default_graph_path = 'output/2023-4-8-2100_graph_networked.graphml'
+default_mrt_file_path = '2024-04-26-2100_mrt.tif'
+default_graph_path = '2024-04-26-2100_graph_networked.graphml' 
 default_geopackage_path = 'Maps/walkOnlyGraph.gpkg'
 def get_data_from_raster(lat, long, raster):
     # gets the data from the raster at the given lat/long coordinates (should be in same crs as raster)
