@@ -37,7 +37,7 @@ def run_solweig_buildup():
     file_cleanup()
     today = datetime.now(timezone.utc)
     for day in range(3):
-        when_to_run = today.replace(day=today.day + day)
+        when_to_run = today + timedelta(days=day)
         run_solweig_daily(when_to_run)
 
 def run_solweig_daily(today):
