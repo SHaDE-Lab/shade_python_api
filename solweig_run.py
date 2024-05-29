@@ -1,7 +1,7 @@
 import fnmatch
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from os import environ, path
 
 import pandas as pd
@@ -17,6 +17,10 @@ load_dotenv(path.join(basedir, ".env"))
 
 # General Config
 OIKOLAB_KEY = environ.get("OIKOLAB_KEY")
+DEFAULT_WIND_SPEED = 3.0
+DEFAULT_TEMPERATURE = 25.0
+DEFAULT_RELATIVE_HUMIDITY = 50.0
+DEFAULT_SOLAR_RADIATION = 0.0
 
 def convert_datetime(datetime):
     # ex '2023-01-29 18:00:00' in UTC
@@ -85,25 +89,43 @@ def run_solweig(time_to_run):
     r = requests.get('https://api.oikolab.com/weather',
                      params={'param': ['wind_speed', 'temperature', 'relative_humidity', 'surface_solar_radiation'],
                              # Only Include Tomorrow's Data
-                             'start': time_to_run.date(),
-                             'end': time_to_run.date(),
+                             'start': time_to_run.date() - timedelta(days=1),
+                             'end': time_to_run.date() + timedelta(days=1),
                              # Tempe, AZ Location
                              'lat': 33.29,
                              'lon': -112.42,
                              # Plug in API Key From Discord (will put in .env later)
                              'api-key': OIKOLAB_KEY}
                      )
-    # print("Response Status:", r.status_code)
+    datetime = time_to_run.replace(tzinfo=None)
+
+    if r.status_code != 200:
+        print(f"Error: {r.status_code}", flush=True) 
+        Ws = DEFAULT_WIND_SPEED
+        Ta = DEFAULT_TEMPERATURE
+        RH = DEFAULT_RELATIVE_HUMIDITY
+        radG = DEFAULT_SOLAR_RADIATION
+    else: 
+        weather_data = json.loads(r.json()['data'])
+        df = pd.DataFrame(index=pd.to_datetime(weather_data['index'],
+                                            unit='s'),
+                        data=weather_data['data'],
+                        columns=weather_data['columns'])
+         # Convert to no timezone to use as key
+        # Convert to no timezone
+        df.tz_localize(None)
+        Ws = df.loc[datetime]['wind_speed (m/s)']
+        Ta = df.loc[datetime]['temperature (degC)']
+        # expected to be a percentage between 0% and 100%
+        RH = df.loc[datetime]['relative_humidity (0-1)'] * 100
+        radG = df.loc[datetime]['surface_solar_radiation (W/m^2)']
+
+    #print("Response Status:", r.status_code)
     # print("Response Reason:", r.reason)
     # print("Response Reason:", r.content)
 
     # Processing Response into Panda DataFrame
-    weather_data = json.loads(r.json()['data'])
-    df = pd.DataFrame(index=pd.to_datetime(weather_data['index'],
-                                           unit='s'),
-                      data=weather_data['data'],
-                      columns=weather_data['columns'])
-
+   
     # open files
     DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls = open_files()
 
@@ -131,15 +153,7 @@ def run_solweig(time_to_run):
 
     # Close files
     close_files(DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls)
-    # Convert to no timezone to use as key
-    datetime = time_to_run.replace(tzinfo=None)
-    # Convert to no timezone
-    df.tz_localize(None)
-    Ws = df.loc[datetime]['wind_speed (m/s)']
-    Ta = df.loc[datetime]['temperature (degC)']
-    # expected to be a percentage between 0% and 100%
-    RH = df.loc[datetime]['relative_humidity (0-1)'] * 100
-    radG = df.loc[datetime]['surface_solar_radiation (W/m^2)']
+   
     location = {'latitude': 33.29, 'longitude': -112.42}
 
     year, month, day, doy, hour, minu = convert_datetime(time_to_run)
@@ -159,7 +173,7 @@ def run_solweig(time_to_run):
     root = 'output/' + time_to_run.tz_convert(None).strftime('%Y-%m-%d-%H00')
 
     rt = rio.open(root + '_mrt.tif', 'w', driver='GTiff', height=mrt.shape[0], width=mrt.shape[1], count=1,
-                  crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype)
+                  crs=DSM.crs, transform=DSM.transform, dtype=mrt.dtype, compress='lzw')
     rt.write(mrt, 1)
     rt.close
 
