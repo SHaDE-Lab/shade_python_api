@@ -11,16 +11,17 @@ from dotenv import load_dotenv
 
 import solweig_mrt as sol
 
-# Specificy a `.env` file containing key/value config values
+# Use the .env file to get the API key for the OIKOLAB API
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
 
 # General Config
 OIKOLAB_KEY = environ.get("OIKOLAB_KEY")
+
 DEFAULT_WIND_SPEED = 3.0
-DEFAULT_TEMPERATURE = 25.0
-DEFAULT_RELATIVE_HUMIDITY = 50.0
-DEFAULT_SOLAR_RADIATION = 0.0
+DEFAULT_TEMPERATURE = 30.0
+DEFAULT_RELATIVE_HUMIDITY = 37.0
+DEFAULT_SOLAR_RADIATION = 1360.0
 
 def convert_datetime(datetime):
     # ex '2023-01-29 18:00:00' in UTC
@@ -88,19 +89,18 @@ def run_solweig(time_to_run):
     # Geting data from API
     r = requests.get('https://api.oikolab.com/weather',
                      params={'param': ['wind_speed', 'temperature', 'relative_humidity', 'surface_solar_radiation'],
-                             # Only Include Tomorrow's Data
+                             # The day plus or minus one day for buffer 
                              'start': time_to_run.date() - timedelta(days=1),
                              'end': time_to_run.date() + timedelta(days=1),
                              # Tempe, AZ Location
                              'lat': 33.29,
                              'lon': -112.42,
-                             # Plug in API Key From Discord (will put in .env later)
                              'api-key': OIKOLAB_KEY}
                      )
     datetime = time_to_run.replace(tzinfo=None)
 
     if r.status_code != 200:
-        print(f"Error: {r.status_code}", flush=True) 
+        print(f"Error: {r.status_code} {r.json()}", flush=True) 
         Ws = DEFAULT_WIND_SPEED
         Ta = DEFAULT_TEMPERATURE
         RH = DEFAULT_RELATIVE_HUMIDITY
@@ -119,12 +119,6 @@ def run_solweig(time_to_run):
         # expected to be a percentage between 0% and 100%
         RH = df.loc[datetime]['relative_humidity (0-1)'] * 100
         radG = df.loc[datetime]['surface_solar_radiation (W/m^2)']
-
-    #print("Response Status:", r.status_code)
-    # print("Response Reason:", r.reason)
-    # print("Response Reason:", r.content)
-
-    # Processing Response into Panda DataFrame
    
     # open files
     DSM, Vegdsm, Dem, Svf, SvfN, SvfW, SvfE, SvfS, Svfveg, SvfNveg, SvfEveg, SvfSveg, SvfWveg, Svfaveg, SvfEaveg, SvfSaveg, SvfWaveg, SvfNaveg, Walls, Dirwalls = open_files()
