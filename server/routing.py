@@ -96,7 +96,7 @@ def get_route(start_coord, stop_coord, date_time_string):
     else:
         G = ox.load_graphml(default_graph_path, edge_dtypes=attribute_types)
         print(f'using default graph for {date_time_string}', flush=True)
-    G = ox.utils_graph.get_undirected(G)
+    G = ox.utils_graph.get_undirected(G) 
     ox.plot_graph(G)
     path_time = time.time()
     transformer = Transformer.from_crs("EPSG:4326", G.graph['crs'], always_xy=True)
