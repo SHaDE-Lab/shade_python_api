@@ -82,13 +82,13 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
         # Add the custom MRT attribute and cost attribute to the edge
         data['mrt'] = mean_mrt_value[0]
         data['cost'] = total_mrt[0]
-    ox.save_graphml(G, 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked'))
+    ox.save_graphml(G, 'historical_mrt_data/{0}_graph_{1}.graphml'.format(date_time_string, 'networked'))
     return G
 
 
 def get_route(start_coord, stop_coord, date_time_string):
     # if the graph file exists, load it, otherwise make it
-    graph_path = 'output/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
+    graph_path = 'historical_mrt_data/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
     attribute_types = {'cost': float, 'oneway': str}
 
     if os.path.exists(graph_path):
