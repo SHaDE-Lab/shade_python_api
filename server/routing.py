@@ -8,6 +8,8 @@ from shapely.geometry import LineString
 import geojson
 import geopandas as gpd
 
+import time
+
 default_mrt_file_path = 'output/2024-04-26-2100_mrt.tif'
 default_graph_path = 'output/2024-04-26-2100_graph_networked.graphml' 
 default_geopackage_path = 'Maps/walkOnlyGraph.gpkg'
@@ -89,12 +91,12 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
                 data['cost'] = total_mrt[0]
         except:
             print(mean_mrt_value)
-            
+
     ox.save_graphml(G, 'historical_mrt_data/{0}_graph_{1}.graphml'.format(date_time_string, 'networked'))
     return G
 
 
-def get_route(start_coord, stop_coord, date_time_string):
+def get_route(start_coord, stop_coord, date_time_string, weight='cost'):
     # if the graph file exists, load it, otherwise make it
     graph_path = 'historical_mrt_data/{0}_graph_{1}.graphml'.format(date_time_string, 'networked')
     attribute_types = {'cost': float, 'oneway': str}
@@ -114,7 +116,7 @@ def get_route(start_coord, stop_coord, date_time_string):
     long, lat = transformer.transform(stop_coord[0], stop_coord[1])
     dest_node = ox.distance.nearest_nodes(G, long, lat)
     # Calculate the route using Dijkstra's algorithm (shortest path)
-    route = ox.routing.shortest_path(G, orig_node, dest_node, weight='cost')
+    route = ox.routing.shortest_path(G, orig_node, dest_node, weight=weight)
     # route is list of node IDs constituting the shortest path
     print(f'path {route} found in {time.time() - path_time}')  
 
@@ -166,5 +168,15 @@ if __name__ == '__main__':
     ox.plot_graph(G)
     brickyard = (-111.93952587328305, 33.423795079832)  # brickyard in wgs84 (long, lat)
     psych_north = (-111.92961401637315, 33.42070688780706)  # psych north in wgs84 (long, lat)
-    date_time_string = '2024-04-18-1000'
-    get_route(brickyard, psych_north, date_time_string)
+    date_time_string = '2024-06-15-1100'
+    res1 = get_route(brickyard, psych_north, date_time_string, 'cost')
+    res2 = get_route(brickyard, psych_north, date_time_string, 'length')
+
+    start = time.time()
+    print("optimal:")
+    print(res1)
+
+    print("shortest:")
+    print(res2)
+
+    print("time taken:", time.time() - start)

@@ -16,4 +16,4 @@
 source activate cool_routes_venv
 
 #Run the software/python script
-python /home/wkhan17/Thermal-Comfort-Routing/shade_python_api/server/paper_analysis_codes.py
+python /home/wkhan17/Thermal-Comfort-Routing/shade_python_api/server/routing.py
