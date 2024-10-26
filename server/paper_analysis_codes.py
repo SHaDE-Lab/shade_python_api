@@ -29,5 +29,3 @@ if __name__ == '__main__':
             timekey = target_date_ts.strftime('%Y-%m-%d-%H00')
             mean_radiant_temp = rasterio.open('historical_mrt_data/{0}_mrt.tif'.format(timekey))
             make_walking_network_graph(mean_radiant_temp, timekey)
-
-            exit(0)
