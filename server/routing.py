@@ -204,25 +204,30 @@ if __name__ == '__main__':
                     target_date_ts = pd.Timestamp(target_date).replace(hour=hour)
                     timekey = target_date_ts.strftime('%Y-%m-%d-%H00')
 
-                    res1 = get_route(src, dest, timekey, 'cost')
-                    res2 = get_route(src, dest, timekey, 'length')
+                    try:
+                        res1 = get_route(src, dest, timekey, 'cost')
+                        res2 = get_route(src, dest, timekey, 'length')
 
-                    answer.append({
-                        "source_name": locations.iloc[i]["name"],
-                        "source_lon": locations.iloc[i]["lon"],
-                        "source_lat": locations.iloc[i]["lat"],
+                        answer.append({
+                            "source_name": locations.iloc[i]["name"],
+                            "source_lon": locations.iloc[i]["lon"],
+                            "source_lat": locations.iloc[i]["lat"],
 
-                        "dest_name": locations.iloc[j]["name"],
-                        "dest_lon": locations.iloc[j]["lon"],
-                        "dest_lat": locations.iloc[j]["lat"],
+                            "dest_name": locations.iloc[j]["name"],
+                            "dest_lon": locations.iloc[j]["lon"],
+                            "dest_lat": locations.iloc[j]["lat"],
 
-                        "optimal_length": round(res1[0]["length"], 5),
-                        "optimal_mrt": round(res1[0]["mrt"], 5),
-                        "optimal_avg_mrt": round(res1[0]["average_mrt"], 5),
+                            "optimal_length": round(res1[0]["length"], 5),
+                            "optimal_mrt": round(res1[0]["mrt"], 5),
+                            "optimal_avg_mrt": round(res1[0]["average_mrt"], 5),
 
-                        "shortest_path_length": round(res2[0]["length"], 5),
-                        "shortest_path_mrt": round(res2[0]["mrt"], 5),
-                        "shortest_path_avg_mrt": round(res2[0]["average_mrt"], 5)
-                    })
+                            "shortest_path_length": round(res2[0]["length"], 5),
+                            "shortest_path_mrt": round(res2[0]["mrt"], 5),
+                            "shortest_path_avg_mrt": round(res2[0]["average_mrt"], 5)
+                        })
+                    except Exception as e:
+                        print("error in", i, j, locations.iloc[i]["name"], locations.iloc[j]["name"])
+                        print(e)
+                        exit(-1)
     
     pd.DataFrame(answer).to_csv("random_cool_routes_optimal_vs_shortest.csv", sep=",", index=False)
