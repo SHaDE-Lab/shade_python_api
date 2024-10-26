@@ -7,4 +7,4 @@
 *.xml
 *.iml
 
-historical_mrt_data/*
+server/historical_mrt_data
