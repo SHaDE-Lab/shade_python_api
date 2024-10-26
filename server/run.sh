@@ -11,8 +11,6 @@
 #SBATCH --mail-user="wkhan17@asu.edu"
 #SBATCH --export=NONE                     # Purge the job-submitting shell environment
 
-#Load required software
-module load mamba/latest
 
 #Activate our environment
 source activate cool_routes_venv
