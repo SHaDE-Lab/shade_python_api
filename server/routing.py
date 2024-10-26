@@ -8,7 +8,8 @@ from shapely.geometry import LineString
 import geojson
 import geopandas as gpd
 
-import time
+import pandas as pd
+from datetime import datetime, timezone
 
 default_mrt_file_path = 'output/2024-04-26-2100_mrt.tif'
 default_graph_path = 'output/2024-04-26-2100_graph_networked.graphml' 
@@ -172,11 +173,56 @@ if __name__ == '__main__':
     res1 = get_route(brickyard, psych_north, date_time_string, 'cost')
     res2 = get_route(brickyard, psych_north, date_time_string, 'length')
 
-    start = time.time()
-    print("optimal:")
-    print(res1)
+    selected_dates = [
+        [2023, 10, 15],
+        [2023, 11, 12],
+        [2023, 12, 15],
+        [2024, 1, 16],
+        [2024, 2, 15],
+        [2024, 3, 13],
+        [2024, 4, 15],
+        [2024, 5, 15],
+        [2024, 6, 15],
+        [2024, 7, 17],
+        [2024, 8, 15],
+        [2024, 9, 16],
+    ]
 
-    print("shortest:")
-    print(res2)
+    answer = []
 
-    print("time taken:", time.time() - start)
+    locations = pd.read_csv("final_landmarks.csv")
+    for i in range(1, len(locations)):
+        src = (locations.iloc[i]["lon"], locations.iloc[i]["lat"])
+        for j in range(i + 1, len(locations)):
+            dest = (locations.iloc[j]["lon"], locations.iloc[j]["lat"])
+
+            for dates in selected_dates:
+                target_date = datetime(dates[0], dates[1], dates[2], tzinfo=timezone.utc)
+                target_date = target_date.replace(minute=0, second=0, microsecond=0)
+
+                for hour in range(24):
+                    target_date_ts = pd.Timestamp(target_date).replace(hour=hour)
+                    timekey = target_date_ts.strftime('%Y-%m-%d-%H00')
+
+                    res1 = get_route(src, dest, timekey, 'cost')
+                    res2 = get_route(src, dest, timekey, 'length')
+
+                    answer.append({
+                        "source_name": locations.iloc[i]["name"],
+                        "source_lon": locations.iloc[i]["lon"],
+                        "source_lat": locations.iloc[i]["lat"],
+
+                        "dest_name": locations.iloc[j]["name"],
+                        "dest_lon": locations.iloc[j]["lon"],
+                        "dest_lat": locations.iloc[j]["lat"],
+
+                        "optimal_length": round(res1[0]["length"], 5),
+                        "optimal_mrt": round(res1[0]["mrt"], 5),
+                        "optimal_avg_mrt": round(res1[0]["average_mrt"], 5),
+
+                        "shortest_path_length": round(res2[0]["length"], 5),
+                        "shortest_path_mrt": round(res2[0]["mrt"], 5),
+                        "shortest_path_avg_mrt": round(res2[0]["average_mrt"], 5)
+                    })
+    
+    pd.DataFrame(answer).to_csv("random_cool_routes_optimal_vs_shortest.csv", sep=",", index=False)
