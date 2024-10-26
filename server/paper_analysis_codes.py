@@ -5,8 +5,8 @@ from datetime import datetime, timezone, timedelta
 
 if __name__ == '__main__':
     selected_dates = [
-        [2023, 10, 15],
-        [2023, 11, 12],
+        # [2023, 10, 15],
+        # [2023, 11, 12],
         [2023, 12, 15],
         [2024, 1, 16],
         [2024, 2, 15],

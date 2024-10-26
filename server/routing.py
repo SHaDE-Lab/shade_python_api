@@ -80,8 +80,16 @@ def make_walking_network_graph(mean_radiant_temp, date_time_string):
         mean_mrt_value = total_mrt / (num_samples + 1)
 
         # Add the custom MRT attribute and cost attribute to the edge
-        data['mrt'] = mean_mrt_value[0]
-        data['cost'] = total_mrt[0]
+        try:
+            if isinstance(mean_mrt_value, float):
+                data['mrt'] = mean_mrt_value
+                data['cost'] = total_mrt
+            else:
+                data['mrt'] = mean_mrt_value[0]
+                data['cost'] = total_mrt[0]
+        except:
+            print(mean_mrt_value)
+            
     ox.save_graphml(G, 'historical_mrt_data/{0}_graph_{1}.graphml'.format(date_time_string, 'networked'))
     return G
 
