@@ -152,14 +152,23 @@ def calculate_statistics(G, route):
     # calculate the total mrt of the route
     mrt = 0.0
     weighted_sum = 0.0
-    print(route)
+    err = 0
+    
     for i in range(len(route) - 1):
         source_node = route[i]
         target_node = route[i + 1]
         # Use .edges() to get edge data for the current pair of nodes
         
-        print(G.get_edge_data(source_node, target_node))
-        edge = G.get_edge_data(source_node, target_node)[0]
+        # print(G.get_edge_data(source_node, target_node))
+        
+        edge_dict = G.get_edge_data(source_node, target_node)
+        if 0 in edge_dict.keys():
+            edge = edge_dict[0]
+        else:
+            edge = edge_dict[edge_dict.keys()[0]]
+            err += 1
+            print("used key: ", edge_dict.keys()[0])
+            
         length += float(edge['length'])
         mrt += float(edge['mrt'])
         weighted_sum += float(edge['mrt']) * float(edge['length'])
