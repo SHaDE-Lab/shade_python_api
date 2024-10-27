@@ -165,15 +165,15 @@ def calculate_statistics(G, route):
         if 0 in edge_dict.keys():
             edge = edge_dict[0]
         else:
-            edge = edge_dict[edge_dict.keys()[0]]
+            idx = list(edge_dict.keys())[0]
+            edge = edge_dict[idx]
             err += 1
-            # print("used key: ", edge_dict.keys()[0])
 
         length += float(edge['length'])
         mrt += float(edge['mrt'])
         weighted_sum += float(edge['mrt']) * float(edge['length'])
+
     average_mrt = weighted_sum / length
-    
     print(f"used keys other than '0' {err} times ")
     # return stats dictionary
     return {'length': length, 'mrt': mrt, 'average_mrt': average_mrt}
