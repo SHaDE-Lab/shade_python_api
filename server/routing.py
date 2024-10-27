@@ -165,9 +165,11 @@ def calculate_statistics(G, route):
         if 0 in edge_dict.keys():
             edge = edge_dict[0]
         else:
-            edge = edge_dict[edge_dict.keys()[0]]
+            print(edge_dict.keys())
+            idx = list(edge_dict.keys())[0]
+            edge = edge_dict[idx]
             err += 1
-            print("used key: ", edge_dict.keys()[0])
+            print("used key: ", idx)
             
         length += float(edge['length'])
         mrt += float(edge['mrt'])
