@@ -1,0 +1,10 @@
+/home/wkhan17/Thermal-Comfort-Routing/shade_python_api/server/routing.py:35: UserWarning: discarding the gdf_nodes geometry column, though its values differ from the coordinates in the x and y columns
+  G = ox.graph_from_gdfs(gdf_nodes=gdf_nodes, gdf_edges=gdf_edges)
+Traceback (most recent call last):
+  File "/home/wkhan17/Thermal-Comfort-Routing/shade_python_api/server/routing.py", line 210, in <module>
+    res1 = get_route(src, dest, timekey, 'cost')
+  File "/home/wkhan17/Thermal-Comfort-Routing/shade_python_api/server/routing.py", line 125, in get_route
+    statistics = calculate_statistics(G, route)
+  File "/home/wkhan17/Thermal-Comfort-Routing/shade_python_api/server/routing.py", line 160, in calculate_statistics
+    edge = G.get_edge_data(source_node, target_node)[0]
+KeyError: 0
