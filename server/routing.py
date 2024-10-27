@@ -124,9 +124,9 @@ def get_route(start_coord, stop_coord, date_time_string, weight='cost'):
     # calculate stats from the route
     statistics = calculate_statistics(G, route)
 
-    geojson, mrt = convert_to_geoJSON(G, route)
+    # geojson, mrt = convert_to_geoJSON(G, route)
 
-    return statistics, geojson, mrt
+    return statistics #, geojson, mrt
 
 def convert_to_geoJSON(G, route):
     # for each node in the route, get the lat/long
@@ -204,30 +204,27 @@ if __name__ == '__main__':
                     target_date_ts = pd.Timestamp(target_date).replace(hour=hour)
                     timekey = target_date_ts.strftime('%Y-%m-%d-%H00')
 
-                    try:
-                        res1 = get_route(src, dest, timekey, 'cost')
-                        res2 = get_route(src, dest, timekey, 'length')
+                    print("calculating", i, j, locations.iloc[i]["name"], locations.iloc[j]["name"])
 
-                        answer.append({
-                            "source_name": locations.iloc[i]["name"],
-                            "source_lon": locations.iloc[i]["lon"],
-                            "source_lat": locations.iloc[i]["lat"],
+                    res1 = get_route(src, dest, timekey, 'cost')
+                    res2 = get_route(src, dest, timekey, 'length')
 
-                            "dest_name": locations.iloc[j]["name"],
-                            "dest_lon": locations.iloc[j]["lon"],
-                            "dest_lat": locations.iloc[j]["lat"],
+                    answer.append({
+                        "source_name": locations.iloc[i]["name"],
+                        "source_lon": locations.iloc[i]["lon"],
+                        "source_lat": locations.iloc[i]["lat"],
 
-                            "optimal_length": round(res1[0]["length"], 5),
-                            "optimal_mrt": round(res1[0]["mrt"], 5),
-                            "optimal_avg_mrt": round(res1[0]["average_mrt"], 5),
+                        "dest_name": locations.iloc[j]["name"],
+                        "dest_lon": locations.iloc[j]["lon"],
+                        "dest_lat": locations.iloc[j]["lat"],
 
-                            "shortest_path_length": round(res2[0]["length"], 5),
-                            "shortest_path_mrt": round(res2[0]["mrt"], 5),
-                            "shortest_path_avg_mrt": round(res2[0]["average_mrt"], 5)
-                        })
-                    except Exception as e:
-                        print("error in", i, j, locations.iloc[i]["name"], locations.iloc[j]["name"])
-                        print(e)
-                        exit(-1)
+                        "optimal_length": round(res1["length"], 5),
+                        "optimal_mrt": round(res1["mrt"], 5),
+                        "optimal_avg_mrt": round(res1["average_mrt"], 5),
+
+                        "shortest_path_length": round(res2["length"], 5),
+                        "shortest_path_mrt": round(res2["mrt"], 5),
+                        "shortest_path_avg_mrt": round(res2["average_mrt"], 5)
+                    })
     
     pd.DataFrame(answer).to_csv("random_cool_routes_optimal_vs_shortest.csv", sep=",", index=False)
