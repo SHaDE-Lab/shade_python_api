@@ -4,24 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb13dce2-3ff2-4a3f-ac0a-ae880e504f47" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clearness_index.py" beforeDir="false" afterPath="$PROJECT_DIR$/clearness_index.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/masked_2023-4-8-2100_mrt.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/test.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_solweig_jobs.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_solweig_jobs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/output/masked_2023-4-8-2100_mrt.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/output/test.tif" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/routing.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/routing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solweig_cylindric_wedge_svfalfa.py" beforeDir="false" afterPath="$PROJECT_DIR$/solweig_cylindric_wedge_svfalfa.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solweig_gvf_sunonsurface.py" beforeDir="false" afterPath="$PROJECT_DIR$/solweig_gvf_sunonsurface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solweig_k_rads.py" beforeDir="false" afterPath="$PROJECT_DIR$/solweig_k_rads.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solweig_l_rads.py" beforeDir="false" afterPath="$PROJECT_DIR$/solweig_l_rads.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solweig_mrt.py" beforeDir="false" afterPath="$PROJECT_DIR$/solweig_mrt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solweig_tswavedelay.py" beforeDir="false" afterPath="$PROJECT_DIR$/solweig_tswavedelay.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/solweig_wallshadow.py" beforeDir="false" afterPath="$PROJECT_DIR$/solweig_wallshadow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sunpos.py" beforeDir="false" afterPath="$PROJECT_DIR$/sunpos.py" afterDir="false" />
-    </list>
+    <list default="true" id="eb13dce2-3ff2-4a3f-ac0a-ae880e504f47" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -58,8 +41,8 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/evancrabtree/Documents/GITHUB/shade_python_api/server",
+    "git-widget-placeholder": "codes__for__paper",
+    "last_opened_file_path": "E:/Programming/Research/Shade-Lab/thermal-comfort-routing/Thermal_Comfort_Routing_backend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",

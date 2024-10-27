@@ -156,6 +156,7 @@ def calculate_statistics(G, route):
         source_node = route[i]
         target_node = route[i + 1]
         # Use .edges() to get edge data for the current pair of nodes
+        print(G)
         print(G.get_edge_data(source_node, target_node))
         edge = G.get_edge_data(source_node, target_node)[0]
         length += float(edge['length'])
